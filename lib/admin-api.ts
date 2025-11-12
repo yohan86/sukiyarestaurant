@@ -182,6 +182,61 @@ const mockMenuItems: MenuItem[] = [
     price: 150,
     imageUrl: "https://via.placeholder.com/150",
     category: "Drink",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "7",
+    nameEn: "Tempura",
+    nameJp: "天ぷら",
+    price: 800,
+    imageUrl: "https://via.placeholder.com/150",
+    category: "Appetizer",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "8",
+    nameEn: "Matcha Ice Cream",
+    nameJp: "抹茶アイスクリーム",
+    price: 500,
+    imageUrl: "https://via.placeholder.com/150",
+    category: "Dessert",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "9",
+    nameEn: "Sushi Platter",
+    nameJp: "寿司盛り合わせ",
+    price: 3000,
+    imageUrl: "https://via.placeholder.com/150",
+    category: "Main Course",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "10",
+    nameEn: "Rice",
+    nameJp: "ご飯",
+    price: 200,
+    imageUrl: "https://via.placeholder.com/150",
+    category: "Side Dish",
+    isActive: true,
+    createdAt: new Date().toISOString(),
+    updatedAt: new Date().toISOString(),
+  },
+  {
+    _id: "11",
+    nameEn: "Soda",
+    nameJp: "ソーダ",
+    price: 250,
+    imageUrl: "https://via.placeholder.com/150",
+    category: "Drink",
     isActive: false,
     createdAt: new Date().toISOString(),
     updatedAt: new Date().toISOString(),
@@ -218,10 +273,10 @@ export async function updateMenuItem(id: string, updates: Partial<MenuItem>): Pr
 
 export async function deleteMenuItem(id: string): Promise<void> {
   await new Promise((resolve) => setTimeout(resolve, 200));
-  const item = mockMenuItems.find((m) => m._id === id);
-  if (!item) {
+  const itemIndex = mockMenuItems.findIndex((m) => m._id === id);
+  if (itemIndex === -1) {
     throw new Error("Menu item not found");
   }
-  item.isActive = false;
+  mockMenuItems.splice(itemIndex, 1);
 }
 

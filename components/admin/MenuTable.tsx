@@ -67,8 +67,8 @@ export default function MenuTable() {
       <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-12">
         <div className="text-center">
           <div className="inline-block relative mb-4">
-            <div className="w-16 h-16 border-4 border-[#06C755]/20 rounded-full"></div>
-            <div className="w-16 h-16 border-4 border-[#06C755] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+            <div className="w-16 h-16 border-4 border-[#31a354]/20 rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#31a354] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
           </div>
           <p className="text-gray-600 font-medium text-lg">Loading menu items...</p>
         </div>
@@ -94,7 +94,7 @@ export default function MenuTable() {
             <p className="text-gray-500 mb-6">Try adjusting your filters or add a new food item</p>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="px-6 py-3 bg-gradient-to-r from-[#06C755] to-[#00C300] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 touch-manipulation"
+              className="px-6 py-3 bg-gradient-to-r from-[#31a354] to-[#31a354] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 touch-manipulation"
             >
               + Add New Food
             </button>
@@ -174,7 +174,7 @@ export default function MenuTable() {
                       <div className="flex items-center gap-2">
                         <button
                           onClick={() => setEditingItem(item)}
-                          className="px-4 py-2 text-sm font-bold text-[#06C755] bg-green-50 hover:bg-green-100 rounded-xl transition-all duration-200 active:scale-95 touch-manipulation min-h-[40px] border border-green-200"
+                          className="px-4 py-2 text-sm font-bold text-[#31a354] bg-green-50 hover:bg-green-100 rounded-xl transition-all duration-200 active:scale-95 touch-manipulation min-h-[40px] border border-green-200"
                         >
                           Edit
                         </button>

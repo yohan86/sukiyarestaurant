@@ -49,13 +49,13 @@ export default function StatusSelect({
     },
     Ready: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#06C755]",
-      border: "border-[#06C755]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
     Completed: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#00C300]",
-      border: "border-[#00C300]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
   };
 
@@ -70,7 +70,7 @@ export default function StatusSelect({
       value={status}
       onChange={handleChange}
       disabled={isUpdating}
-      className={`text-sm font-bold rounded-xl border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} py-2 px-4 pr-8 focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[44px] touch-manipulation shadow-sm hover:shadow-md ${
+      className={`text-sm font-bold rounded-xl border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} py-2 px-4 pr-8 focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[44px] touch-manipulation shadow-sm hover:shadow-md ${
         isUpdating ? "opacity-50 cursor-not-allowed" : "cursor-pointer active:scale-95"
       }`}
     >

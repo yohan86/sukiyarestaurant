@@ -99,7 +99,7 @@
 }
 
 .react-datepicker__header {
-  background: linear-gradient(to right, #06C755, #00C300);
+  background: linear-gradient(to right, #31a354, #31a354);
   border-bottom: none;
   border-radius: 0.875rem 0.875rem 0 0;
   padding-top: 1rem;
@@ -129,14 +129,14 @@
 }
 
 .react-datepicker__day:hover {
-  background-color: #06C755;
+  background-color: #31a354;
   color: white;
   border-radius: 0.5rem;
 }
 
 .react-datepicker__day--selected,
 .react-datepicker__day--keyboard-selected {
-  background: linear-gradient(to right, #06C755, #00C300);
+  background: linear-gradient(to right, #31a354, #31a354);
   color: white;
   font-weight: bold;
   border-radius: 0.5rem;
@@ -149,7 +149,7 @@
 
 .react-datepicker__day--today {
   font-weight: bold;
-  border: 2px solid #06C755;
+  border: 2px solid #31a354;
 }
 
 .react-datepicker__day--disabled {

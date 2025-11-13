@@ -19,13 +19,13 @@ export default function StatusBadge({ status, className = "" }: StatusBadgeProps
     },
     Ready: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#06C755]",
-      border: "border-[#06C755]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
     Completed: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#00C300]",
-      border: "border-[#00C300]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
   };
 

@@ -79,7 +79,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
     <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-7 mb-6 hover:shadow-2xl transition-all duration-300">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-3">
-          <span className="w-1.5 h-6 bg-gradient-to-b from-[#06C755] to-[#00C300] rounded-full"></span>
+          <span className="w-1.5 h-6 bg-gradient-to-b from-[#31a354] to-[#31a354] rounded-full"></span>
           Filters & Sort
         </h3>
         {hasActiveFilters && (
@@ -101,7 +101,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "all")}
-            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
+            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
           >
             <option value="all">All Statuses</option>
             <option value="Received">Received</option>
@@ -119,7 +119,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
           <select
             value={tableFilter}
             onChange={(e) => setTableFilter(e.target.value)}
-            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
+            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
           >
             <option value="all">All Tables</option>
             {uniqueTables.map((table) => (
@@ -141,7 +141,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
             placeholderText="Select date..."
             dateFormat="MMM dd, yyyy"
             isClearable
-            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
+            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
             wrapperClassName="w-full"
           />
         </div>
@@ -154,7 +154,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
           <select
             value={sortOrder}
             onChange={(e) => handleSortChange(e.target.value as SortOrder)}
-            className="w-full rounded-xl border-2 border-gray-200 bg-gradient-to-br from-blue-50 to-purple-50 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-bold text-gray-900 shadow-sm focus:border-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-[#06C755]/50"
+            className="w-full rounded-xl border-2 border-gray-200 bg-gradient-to-br from-blue-50 to-purple-50 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-bold text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-[#31a354]/50"
           >
             <option value="newest">Newest First</option>
             <option value="oldest">Oldest First</option>

@@ -64,7 +64,7 @@ export default function AdminDashboard() {
         {/* Header Section */}
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 md:gap-6">
           <div>
-            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-3 bg-gradient-to-r from-[#06C755] via-[#00C300] to-[#06C755] bg-clip-text text-transparent drop-shadow-lg">
+            <h1 className="text-5xl md:text-6xl lg:text-7xl font-extrabold mb-3 bg-gradient-to-r from-[#31a354] via-[#31a354] to-[#31a354] bg-clip-text text-transparent drop-shadow-lg">
               Dashboard
             </h1>
             <p className="text-lg md:text-xl text-gray-600 font-medium">
@@ -87,7 +87,7 @@ export default function AdminDashboard() {
             title="Total Orders"
             value={stats.totalOrders}
             icon="📋"
-            gradient="from-[#06C755] to-[#00C300]"
+            gradient="from-[#31a354] to-[#31a354]"
             bgGradient="from-green-50 via-emerald-50 to-teal-50"
             trend="+12%"
             trendUp={true}
@@ -112,7 +112,7 @@ export default function AdminDashboard() {
             title="Ready"
             value={stats.readyOrders}
             icon="✅"
-            gradient="from-[#06C755] to-[#00C300]"
+            gradient="from-[#31a354] to-[#31a354]"
             bgGradient="from-green-50 via-emerald-50 to-teal-50"
             subtitle="Ready to serve"
           />
@@ -166,7 +166,7 @@ export default function AdminDashboard() {
             <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-7 hover:shadow-2xl transition-all duration-300">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-bold text-gray-900">Performance</h3>
-                <div className="w-10 h-10 bg-gradient-to-br from-[#06C755] to-[#00C300] rounded-xl flex items-center justify-center text-xl">
+                <div className="w-10 h-10 bg-gradient-to-br from-[#31a354] to-[#31a354] rounded-xl flex items-center justify-center text-xl">
                   📊
                 </div>
               </div>
@@ -178,7 +178,7 @@ export default function AdminDashboard() {
                   </div>
                   <div className="w-full bg-gray-200 rounded-full h-3 overflow-hidden">
                     <div 
-                      className="h-full bg-gradient-to-r from-[#06C755] to-[#00C300] rounded-full transition-all duration-1000 ease-out"
+                      className="h-full bg-gradient-to-r from-[#31a354] to-[#31a354] rounded-full transition-all duration-1000 ease-out"
                       style={{ width: `${completionRate}%` }}
                     ></div>
                   </div>
@@ -227,18 +227,18 @@ export default function AdminDashboard() {
         <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-8 hover:shadow-2xl transition-all duration-300">
           <div className="flex items-center justify-between mb-6 md:mb-8">
             <h2 className="text-2xl md:text-3xl font-bold text-gray-900 flex items-center gap-3">
-              <span className="w-2 h-10 bg-gradient-to-b from-[#06C755] to-[#00C300] rounded-full animate-pulse"></span>
+              <span className="w-2 h-10 bg-gradient-to-b from-[#31a354] to-[#31a354] rounded-full animate-pulse"></span>
               Recent Orders
             </h2>
-            <div className="px-4 py-2 bg-gradient-to-r from-[#06C755] to-[#00C300] rounded-xl text-white text-sm font-bold shadow-lg">
+            <div className="px-4 py-2 bg-gradient-to-r from-[#31a354] to-[#31a354] rounded-xl text-white text-sm font-bold shadow-lg">
               {recentOrders.length} Recent
             </div>
           </div>
           {loading ? (
             <div className="text-center text-gray-500 py-20">
               <div className="inline-block relative">
-                <div className="w-16 h-16 border-4 border-[#06C755]/20 rounded-full"></div>
-                <div className="w-16 h-16 border-4 border-[#06C755] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+                <div className="w-16 h-16 border-4 border-[#31a354]/20 rounded-full"></div>
+                <div className="w-16 h-16 border-4 border-[#31a354] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
               </div>
               <p className="mt-6 text-gray-600 font-medium text-lg">Loading orders...</p>
             </div>
@@ -368,13 +368,13 @@ function RecentOrderItem({
     },
     Ready: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#06C755]",
-      border: "border-[#06C755]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
     Completed: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#00C300]",
-      border: "border-[#00C300]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
   };
 
@@ -461,7 +461,7 @@ function RecentOrderItem({
           );
         })}
         {order.items.length > 2 && (
-          <div className="text-sm md:text-base font-bold text-[#06C755] text-center py-4 md:py-5 bg-white/50 rounded-xl backdrop-blur-sm min-h-[56px] flex items-center justify-center">
+          <div className="text-sm md:text-base font-bold text-[#31a354] text-center py-4 md:py-5 bg-white/50 rounded-xl backdrop-blur-sm min-h-[56px] flex items-center justify-center">
             + {order.items.length - 2} more item{order.items.length - 2 > 1 ? "s" : ""} (tap to view all)
           </div>
         )}
@@ -493,13 +493,13 @@ function OrderDetailsModal({
     },
     Ready: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#06C755]",
-      border: "border-[#06C755]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
     Completed: {
       bg: "bg-[#E8F5E9]",
-      text: "text-[#00C300]",
-      border: "border-[#00C300]",
+      text: "text-[#31a354]",
+      border: "border-[#31a354]",
     },
   };
 
@@ -540,7 +540,7 @@ function OrderDetailsModal({
         onClick={(e) => e.stopPropagation()}
       >
         {/* Modal Header */}
-        <div className="sticky top-0 bg-gradient-to-r from-[#06C755] via-[#00C300] to-[#06C755] px-6 md:px-8 py-6 md:py-7 flex items-center justify-between rounded-t-3xl shadow-lg z-10 min-h-[80px]">
+        <div className="sticky top-0 bg-gradient-to-r from-[#31a354] via-[#31a354] to-[#31a354] px-6 md:px-8 py-6 md:py-7 flex items-center justify-between rounded-t-3xl shadow-lg z-10 min-h-[80px]">
           <div className="flex-1">
             <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">Order Details</h2>
             <p className="text-base md:text-lg text-white/95 mt-2 font-medium">{orderDate} at {orderTime}</p>
@@ -601,7 +601,7 @@ function OrderDetailsModal({
           {/* Cart Items */}
           <div className="mb-8">
             <h3 className="text-xl md:text-2xl font-bold text-gray-900 mb-6 flex items-center gap-3">
-              <span className="w-1.5 h-7 bg-gradient-to-b from-[#06C755] to-[#00C300] rounded-full"></span>
+              <span className="w-1.5 h-7 bg-gradient-to-b from-[#31a354] to-[#31a354] rounded-full"></span>
               Order Items
             </h3>
             <div className="space-y-4 md:space-y-5">
@@ -614,7 +614,7 @@ function OrderDetailsModal({
                   >
                     <div className="flex-1">
                       <div className="flex items-center gap-4 md:gap-5">
-                        <div className="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-[#06C755] to-[#00C300] rounded-xl flex items-center justify-center text-base md:text-lg font-bold text-white shadow-lg border-2 border-white/30">
+                        <div className="flex-shrink-0 w-14 h-14 md:w-16 md:h-16 bg-gradient-to-br from-[#31a354] to-[#31a354] rounded-xl flex items-center justify-center text-base md:text-lg font-bold text-white shadow-lg border-2 border-white/30">
                           {item.quantity}
                         </div>
                         <div>
@@ -640,7 +640,7 @@ function OrderDetailsModal({
           <div className="border-t-2 border-white/50 pt-6 md:pt-7 bg-white/40 backdrop-blur-sm rounded-xl p-5 md:p-6 border border-white/50 min-h-[80px] flex items-center">
             <div className="flex items-center justify-between w-full">
               <span className="text-2xl md:text-3xl font-bold text-gray-900">Total</span>
-              <span className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#06C755] to-[#00C300] bg-clip-text text-transparent drop-shadow-sm">
+              <span className="text-3xl md:text-4xl font-bold bg-gradient-to-r from-[#31a354] to-[#31a354] bg-clip-text text-transparent drop-shadow-sm">
                 ¥{order.total.toLocaleString()}
               </span>
             </div>
@@ -651,7 +651,7 @@ function OrderDetailsModal({
         <div className="sticky bottom-0 bg-gradient-to-r from-white/90 to-white/80 backdrop-blur-md border-t-2 border-white/50 px-6 md:px-8 py-5 md:py-6 flex justify-end rounded-b-3xl">
           <button
             onClick={onClose}
-            className="px-10 md:px-12 py-4 md:py-5 bg-gradient-to-r from-[#06C755] to-[#00C300] text-white rounded-xl active:shadow-xl transition-all duration-200 font-bold text-lg md:text-xl active:scale-95 shadow-lg border-2 border-white/30 min-h-[56px] md:min-h-[64px] min-w-[120px] md:min-w-[140px] flex items-center justify-center touch-manipulation"
+            className="px-10 md:px-12 py-4 md:py-5 bg-gradient-to-r from-[#31a354] to-[#31a354] text-white rounded-xl active:shadow-xl transition-all duration-200 font-bold text-lg md:text-xl active:scale-95 shadow-lg border-2 border-white/30 min-h-[56px] md:min-h-[64px] min-w-[120px] md:min-w-[140px] flex items-center justify-center touch-manipulation"
           >
             Close
           </button>

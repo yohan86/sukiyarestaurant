@@ -38,8 +38,8 @@ export default function OrderTable() {
       <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-12">
         <div className="text-center">
           <div className="inline-block relative mb-4">
-            <div className="w-16 h-16 border-4 border-[#06C755]/20 rounded-full"></div>
-            <div className="w-16 h-16 border-4 border-[#06C755] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
+            <div className="w-16 h-16 border-4 border-[#31a354]/20 rounded-full"></div>
+            <div className="w-16 h-16 border-4 border-[#31a354] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
           </div>
           <p className="text-gray-600 font-medium text-lg">Loading orders...</p>
         </div>

@@ -12,7 +12,7 @@ export default function AdminNavigation() {
         <div className="flex justify-between h-20 md:h-24">
           <div className="flex items-center w-full">
             <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#06C755] via-[#00C300] to-[#06C755] bg-clip-text text-transparent drop-shadow-sm">
+              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#31a354] via-[#31a354] to-[#31a354] bg-clip-text text-transparent drop-shadow-sm">
                 🍱 Sukiya Admin
               </h1>
             </div>
@@ -65,7 +65,7 @@ function NavLink({
       href={href}
       className={`inline-flex items-center px-5 md:px-6 py-3 md:py-3.5 rounded-xl text-base md:text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[48px] md:min-h-[52px] ${
         isActive
-          ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
+          ? "bg-gradient-to-r from-[#31a354] to-[#31a354] text-white shadow-lg active:shadow-xl"
           : "text-gray-700 active:text-gray-900 active:bg-white/70 backdrop-blur-sm border border-white/50"
       }`}
     >
@@ -91,7 +91,7 @@ function MobileNavLink({
       href={href}
       className={`block px-5 py-4 rounded-xl text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[56px] flex items-center ${
         isActive
-          ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
+          ? "bg-gradient-to-r from-[#31a354] to-[#31a354] text-white shadow-lg active:shadow-xl"
           : "text-gray-700 active:bg-white active:text-gray-900"
       }`}
     >

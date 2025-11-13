@@ -1,6 +1,8 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import DatePicker from "react-datepicker";
+import "react-datepicker/dist/react-datepicker.css";
 import { type Order } from "@/lib/admin-api";
 
 type OrderStatus = Order["status"];
@@ -16,6 +18,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
   const [tableFilter, setTableFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
+  const [dateFilter, setDateFilter] = useState<Date | null>(null);
 
   // Get unique table numbers
   const uniqueTables = Array.from(
@@ -35,6 +38,17 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
       filtered = filtered.filter((order) => order.tableNumber === tableFilter);
     }
 
+    // Filter by date (created date)
+    if (dateFilter) {
+      const filterDate = new Date(dateFilter);
+      filterDate.setHours(0, 0, 0, 0);
+      filtered = filtered.filter((order) => {
+        const orderDate = new Date(order.createdAt);
+        orderDate.setHours(0, 0, 0, 0);
+        return orderDate.getTime() === filterDate.getTime();
+      });
+    }
+
     // Sort by ordered time
     filtered.sort((a, b) => {
       const dateA = new Date(a.createdAt).getTime();
@@ -43,12 +57,13 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
     });
 
     onFilterChange(filtered);
-  }, [orders, statusFilter, tableFilter, sortOrder, onFilterChange]);
+  }, [orders, statusFilter, tableFilter, sortOrder, dateFilter, onFilterChange]);
 
   const handleClearFilters = () => {
     setStatusFilter("all");
     setTableFilter("all");
     setSortOrder("newest");
+    setDateFilter(null);
   };
 
   const handleSortChange = (newSortOrder: SortOrder) => {
@@ -58,7 +73,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
     }
   };
 
-  const hasActiveFilters = statusFilter !== "all" || tableFilter !== "all" || sortOrder !== "newest";
+  const hasActiveFilters = statusFilter !== "all" || tableFilter !== "all" || sortOrder !== "newest" || dateFilter !== null;
 
   return (
     <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-7 mb-6 hover:shadow-2xl transition-all duration-300">
@@ -77,7 +92,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
         )}
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 md:gap-5">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-5">
         {/* Filter by Status */}
         <div className="flex-1">
           <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
@@ -115,6 +130,22 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
           </select>
         </div>
 
+        {/* Filter by Date */}
+        <div className="flex-1">
+          <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
+            Order Date
+          </label>
+          <DatePicker
+            selected={dateFilter}
+            onChange={(date) => setDateFilter(date)}
+            placeholderText="Select date..."
+            dateFormat="MMM dd, yyyy"
+            isClearable
+            className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
+            wrapperClassName="w-full"
+          />
+        </div>
+
         {/* Order by Time */}
         <div className="flex-1">
           <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
@@ -149,6 +180,11 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
             {sortOrder === "oldest" && (
               <span className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-bold border border-green-200">
                 Sort: Oldest First
+              </span>
+            )}
+            {dateFilter && (
+              <span className="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm font-bold border border-orange-200">
+                Date: {dateFilter.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
             )}
           </div>

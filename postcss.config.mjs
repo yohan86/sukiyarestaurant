@@ -1,5 +1,8 @@
-const config = {
-  plugins: ["@tailwindcss/postcss"],
-};
+// postcss.config.mjs - ✅ CORRECT SYNTAX for .mjs
 
-export default config;
+export default { // <--- Using ES Module export
+  plugins: {
+    'tailwindcss': {},
+    'autoprefixer': {},
+  },
+};

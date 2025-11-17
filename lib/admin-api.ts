@@ -286,114 +286,70 @@ export async function deleteMenuItem(id: string): Promise<void> {
 // User Management API Functions
 export async function getUsers(): Promise<User[]> {
   try {
-    // Try to fetch from backend API first
-    const response = await fetch(`${API_BASE_URL}/users`);
-    if (response.ok) {
-      return response.json();
-    }
-    // If backend API doesn't exist, extract users from orders
-    const orders = await getOrders();
-    const userMap = new Map<string, {
-      userId: string;
-      displayName: string;
-      totalOrders: number;
-      totalSpent: number;
-      lastOrderDate?: string;
-      orders: Order[];
-    }>();
-
-    orders.forEach((order) => {
-      const existing = userMap.get(order.userId);
-      if (existing) {
-        existing.totalOrders += 1;
-        existing.totalSpent += order.total;
-        if (!existing.lastOrderDate || new Date(order.createdAt) > new Date(existing.lastOrderDate)) {
-          existing.lastOrderDate = order.createdAt;
-        }
-        existing.orders.push(order);
-      } else {
-        userMap.set(order.userId, {
-          userId: order.userId,
-          displayName: order.displayName,
-          totalOrders: 1,
-          totalSpent: order.total,
-          lastOrderDate: order.createdAt,
-          orders: [order],
-        });
-      }
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
     });
-
-    const users: User[] = Array.from(userMap.values()).map((userData, index) => ({
-      _id: `user_${index + 1}`,
-      userId: userData.userId,
-      displayName: userData.displayName,
-      role: "customer" as UserRole,
-      totalOrders: userData.totalOrders,
-      totalSpent: userData.totalSpent,
-      lastOrderDate: userData.lastOrderDate,
-      createdAt: userData.orders[0]?.createdAt || new Date().toISOString(),
-      updatedAt: userData.lastOrderDate || new Date().toISOString(),
-      isActive: true,
-    }));
-
-    return users;
+    
+    if (!response.ok) {
+      let errorMessage = 'Failed to fetch users';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+      } catch {
+        errorMessage = `Server error: ${response.status} ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+    
+    return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      // If backend is not available, try to get from orders
-      try {
-        const orders = await getOrders();
-        const userMap = new Map<string, {
-          userId: string;
-          displayName: string;
-          totalOrders: number;
-          totalSpent: number;
-          lastOrderDate?: string;
-          orders: Order[];
-        }>();
-
-        orders.forEach((order) => {
-          const existing = userMap.get(order.userId);
-          if (existing) {
-            existing.totalOrders += 1;
-            existing.totalSpent += order.total;
-            if (!existing.lastOrderDate || new Date(order.createdAt) > new Date(existing.lastOrderDate)) {
-              existing.lastOrderDate = order.createdAt;
-            }
-            existing.orders.push(order);
-          } else {
-            userMap.set(order.userId, {
-              userId: order.userId,
-              displayName: order.displayName,
-              totalOrders: 1,
-              totalSpent: order.total,
-              lastOrderDate: order.createdAt,
-              orders: [order],
-            });
-          }
-        });
-
-        const users: User[] = Array.from(userMap.values()).map((userData, index) => ({
-          _id: `user_${index + 1}`,
-          userId: userData.userId,
-          displayName: userData.displayName,
-          role: "customer" as UserRole,
-          totalOrders: userData.totalOrders,
-          totalSpent: userData.totalSpent,
-          lastOrderDate: userData.lastOrderDate,
-          createdAt: userData.orders[0]?.createdAt || new Date().toISOString(),
-          updatedAt: userData.lastOrderDate || new Date().toISOString(),
-          isActive: true,
-        }));
-
-        return users;
-      } catch (innerError) {
-        throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running.`);
-      }
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
     }
     if (error instanceof Error) {
       throw error;
     }
     throw new Error('Failed to fetch users');
+  }
+}
+
+export async function createUser(user: Omit<User, "_id" | "createdAt" | "updatedAt" | "totalOrders" | "totalSpent" | "lastOrderDate">): Promise<User> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/users`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(user),
+    });
+    
+    if (!response.ok) {
+      let errorMessage = 'Failed to create user';
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorMessage;
+        if (errorData.missingFields) {
+          errorMessage += `: ${errorData.missingFields.join(', ')}`;
+        }
+        errorMessage = `${errorMessage} (Status: ${response.status})`;
+      } catch {
+        errorMessage = `Server error: ${response.status} ${response.statusText}`;
+      }
+      throw new Error(errorMessage);
+    }
+    
+    return response.json();
+  } catch (error) {
+    if (error instanceof TypeError && error.message === 'Failed to fetch') {
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+    }
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to create user');
   }
 }
 

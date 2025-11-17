@@ -2,12 +2,14 @@
 
 import { useEffect, useState } from "react";
 import { getUsers, updateUser, deleteUser, type User, type UserRole } from "@/lib/admin-api";
+import AddUserModal from "./AddUserModal";
 
 export default function UserTable() {
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState<UserRole | "all">("all");
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   useEffect(() => {
     async function fetchUsers() {
@@ -36,7 +38,12 @@ export default function UserTable() {
 
   const handleToggleStatus = async (user: User) => {
     try {
-      await updateUser(user._id, { isActive: !user.isActive });
+      const userId = user._id || (user as any).id;
+      if (!userId) {
+        console.error("Invalid user: missing ID");
+        return;
+      }
+      await updateUser(userId, { isActive: !user.isActive });
       handleRefresh();
     } catch (error) {
       console.error("Failed to update user status:", error);
@@ -45,7 +52,12 @@ export default function UserTable() {
 
   const handleRoleChange = async (user: User, newRole: UserRole) => {
     try {
-      await updateUser(user._id, { role: newRole });
+      const userId = user._id || (user as any).id;
+      if (!userId) {
+        console.error("Invalid user: missing ID");
+        return;
+      }
+      await updateUser(userId, { role: newRole });
       handleRefresh();
     } catch (error) {
       console.error("Failed to update user role:", error);
@@ -72,7 +84,12 @@ export default function UserTable() {
       return;
     }
     try {
-      await deleteUser(user._id);
+      const userId = user._id || (user as any).id;
+      if (!userId) {
+        console.error("Invalid user: missing ID");
+        return;
+      }
+      await deleteUser(userId);
       handleRefresh();
     } catch (error) {
       console.error("Failed to delete user:", error);
@@ -126,7 +143,8 @@ export default function UserTable() {
   return (
     <div>
       {/* Search and Filter Bar */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div className="mb-6 flex flex-col md:flex-row gap-4">
+        <div className="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4">
         <div className="relative">
           <input
             type="text"
@@ -162,6 +180,14 @@ export default function UserTable() {
             <option value="admin">Admin</option>
           </select>
         </div>
+        </div>
+        <button
+          onClick={() => setIsAddModalOpen(true)}
+          className="px-6 py-3 bg-gradient-to-r from-[#06C755] to-[#00C300] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 touch-manipulation min-h-[48px] flex items-center justify-center gap-2"
+        >
+          <span>+</span>
+          <span>Add User</span>
+        </button>
       </div>
 
       {filteredUsers.length === 0 ? (
@@ -209,9 +235,9 @@ export default function UserTable() {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-100">
-                {filteredUsers.map((user) => (
+                {filteredUsers.map((user, index) => (
                   <tr
-                    key={user._id}
+                    key={(user._id || (user as any).id) || `user-${index}`}
                     className="hover:bg-gradient-to-r hover:from-gray-50 hover:to-gray-100/50 transition-all duration-200 group"
                   >
                     <td className="px-6 py-4">
@@ -293,6 +319,13 @@ export default function UserTable() {
           </div>
         </div>
       )}
+
+      {/* Add User Modal */}
+      <AddUserModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSuccess={handleRefresh}
+      />
     </div>
   );
 }

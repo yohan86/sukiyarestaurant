@@ -76,8 +76,16 @@ export default function EditFoodModal({
         return;
       }
 
+      // Get the item ID (handle both id and _id fields)
+      const itemId = item._id || (item as any).id;
+      if (!itemId) {
+        setError("Invalid menu item: missing ID");
+        setIsSubmitting(false);
+        return;
+      }
+
       // Update menu item
-      await updateMenuItem(item._id, {
+      await updateMenuItem(itemId, {
         nameEn: formData.nameEn.trim(),
         nameJp: formData.nameJp.trim(),
         price: parseFloat(formData.price),

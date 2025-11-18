@@ -1,4 +1,5 @@
 import MenuItemCard from "@/components/MenuItemCard";
+import {MockData as data} from "@/lib/mock-data";
 
 export default function Home() {
   return (
@@ -7,10 +8,10 @@ export default function Home() {
         <h1 className="">Hello!</h1>
         <p>Warmly welcome to our restaurant</p>
         <div className="grid grid-cols-2 gap-2 w-full md:grid-cols-3 lg:grid-cols-4 mt-8 md:gap-4">
-          <MenuItemCard />
-          <MenuItemCard />
-          <MenuItemCard />
-          <MenuItemCard />
+          {data.map((item)=>(
+            <MenuItemCard key={item.id} {...item} />
+          ))}
+   
           
         </div>
       </div>

@@ -1,12 +1,12 @@
 import { IMenuItem } from "@/types/menu-types";
 
-export const MockData:IMenuItem[] = [
+export  const MockData:IMenuItem[] = [
     {
         id: "d001",
         title: "Kaiseki Ryori",
         price: 125,
         description: "A meticulously prepared multi-course Japanese dinner...",
-        image: "/kottu.jpg", 
+        image: "/menus/kottu.jpg", 
         isAvailable:true,
     },
     {
@@ -14,7 +14,7 @@ export const MockData:IMenuItem[] = [
         title: "Sushi Platter",
         price: 95,
         description: "Chef's selection of the finest seasonal fish...",
-        image: "/sushi.jpg",
+        image: "/menus/sushi.jpg",
         isAvailable:true,
     },
 ] 

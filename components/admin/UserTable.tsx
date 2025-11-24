@@ -87,12 +87,16 @@ export default function UserTable() {
       const userId = user._id || (user as any).id;
       if (!userId) {
         console.error("Invalid user: missing ID");
+        alert("Error: Invalid user ID");
         return;
       }
       await deleteUser(userId);
-      handleRefresh();
+      // Refresh the users list after deletion
+      await handleRefresh();
     } catch (error) {
       console.error("Failed to delete user:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete user. Please try again.";
+      alert(`Error: ${errorMessage}`);
     }
   };
 

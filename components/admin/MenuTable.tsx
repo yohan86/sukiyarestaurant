@@ -63,12 +63,16 @@ export default function MenuTable() {
       const itemId = item._id || (item as any).id;
       if (!itemId) {
         console.error("Invalid menu item: missing ID");
+        alert("Error: Invalid menu item ID");
         return;
       }
       await deleteMenuItem(itemId);
-      handleRefresh();
+      // Refresh the menu items after deletion
+      await handleRefresh();
     } catch (error) {
       console.error("Failed to delete item:", error);
+      const errorMessage = error instanceof Error ? error.message : "Failed to delete menu item. Please try again.";
+      alert(`Error: ${errorMessage}`);
     }
   };
 

@@ -543,6 +543,13 @@ export async function deleteUser(id: string): Promise<void> {
       }
       throw new Error(errorMessage);
     }
+    
+    // Read the response body to ensure the request is fully processed
+    try {
+      await response.json();
+    } catch {
+      // Response might be empty, which is fine
+    }
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
       throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);

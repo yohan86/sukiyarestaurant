@@ -12,8 +12,8 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     if (!isLoading) {
       if (!isAuthenticated) {
         router.push("/admin/login");
-      } else if (user && user.role !== "admin" && user.role !== "manager") {
-        // Redirect if user doesn't have admin or manager role
+      } else if (user && user.role !== "admin" && user.role !== "manager" && user.role !== "staff") {
+        // Redirect if user doesn't have admin, manager, or staff role
         router.push("/admin/login");
       }
     }
@@ -33,7 +33,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
     );
   }
 
-  if (!isAuthenticated || (user && user.role !== "admin" && user.role !== "manager")) {
+  if (!isAuthenticated || (user && user.role !== "admin" && user.role !== "manager" && user.role !== "staff")) {
     return null;
   }
 

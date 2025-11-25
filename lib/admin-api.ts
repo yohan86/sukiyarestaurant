@@ -1,6 +1,7 @@
 // Mock API functions for admin dashboard
 // These will be replaced with actual API calls later
 
+// Use external backend by default (sukiya-api on port 5001), or Next.js API routes if NEXT_PUBLIC_API_URL is set to '/api'
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5001/api';
 
 export type OrderStatus = "Received" | "Preparing" | "Ready" | "Completed";

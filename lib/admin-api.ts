@@ -1,20 +1,12 @@
 // Mock API functions for admin dashboard
 // These will be replaced with actual API calls later
 
-// Use external backend by default (sukiya-api on port 5001), or Next.js API routes if NEXT_PUBLIC_API_URL is set to '/api'
-// For local development, use http://localhost:5001, otherwise use the deployed URL
+// Use deployed Vercel API by default
+// For local development, set NEXT_PUBLIC_API_URL=http://localhost:5001 in .env.local
 function getApiBaseUrl(): string {
   // If explicitly set in env, use it
   if (process.env.NEXT_PUBLIC_API_URL) {
     return process.env.NEXT_PUBLIC_API_URL;
-  }
-  
-  // Auto-detect: if running on localhost, use local backend
-  if (typeof window !== 'undefined') {
-    const hostname = window.location.hostname;
-    if (hostname === 'localhost' || hostname === '127.0.0.1') {
-      return 'http://localhost:5001';
-    }
   }
   
   // Default to production URL

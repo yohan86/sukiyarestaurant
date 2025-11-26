@@ -76,9 +76,16 @@ Write-Host ""
 Write-Host "✅ Migration completed successfully!" -ForegroundColor Green
 Write-Host ""
 Write-Host "📝 Next steps:" -ForegroundColor Cyan
-Write-Host "1. Update your .env files with the Atlas connection string"
-Write-Host "2. Test your application"
-Write-Host "3. Update Vercel environment variables if deploying"
+Write-Host "1. Create .env.local file with the Atlas connection string:" -ForegroundColor Yellow
+Write-Host ""
+Write-Host "   DATABASE_URL=$AtlasDbUrl" -ForegroundColor Gray
+Write-Host "   JWT_SECRET=your-secret-key-change-in-production" -ForegroundColor Gray
+Write-Host "   JWT_EXPIRES_IN=7d" -ForegroundColor Gray
+Write-Host ""
+Write-Host "   Or copy from env.template and update with your values" -ForegroundColor Gray
+Write-Host ""
+Write-Host "2. Test your application: npm run dev" -ForegroundColor Yellow
+Write-Host "3. Update Vercel environment variables if deploying" -ForegroundColor Yellow
 Write-Host ""
 Write-Host "Backup saved at: $backupDir" -ForegroundColor Gray
 

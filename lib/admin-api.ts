@@ -114,7 +114,7 @@ export async function login(userId: string, password: string): Promise<LoginResp
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -147,7 +147,7 @@ export async function verifyToken(token: string): Promise<{ valid: boolean; user
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -178,7 +178,7 @@ export async function setPassword(userId: string, password: string): Promise<voi
     }
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -239,7 +239,7 @@ export async function getOrders(): Promise<Order[]> {
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -273,7 +273,7 @@ export async function updateOrderStatus(
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -304,7 +304,7 @@ export async function getMenuItems(): Promise<MenuItem[]> {
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -372,7 +372,7 @@ export async function createMenuItem(item: Omit<MenuItem, "_id" | "createdAt" | 
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -404,7 +404,7 @@ export async function updateMenuItem(id: string, updates: Partial<MenuItem>): Pr
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -440,7 +440,7 @@ export async function deleteMenuItem(id: string): Promise<void> {
     }
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -471,7 +471,7 @@ export async function getUsers(): Promise<User[]> {
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -513,7 +513,7 @@ export async function getUserById(id: string): Promise<User> {
     throw new Error(errorMessage);
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -543,7 +543,7 @@ export async function getUserByUserId(userId: string): Promise<User> {
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -578,7 +578,7 @@ export async function createUser(user: Omit<User, "_id" | "createdAt" | "updated
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -610,7 +610,7 @@ export async function updateUser(id: string, updates: Partial<User>): Promise<Us
     return response.json();
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;
@@ -646,7 +646,7 @@ export async function deleteUser(id: string): Promise<void> {
     }
   } catch (error) {
     if (error instanceof TypeError && error.message === 'Failed to fetch') {
-      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please ensure the backend is running on port 5001.`);
+      throw new Error(`Cannot connect to backend server at ${API_BASE_URL}. Please check if the API is deployed and accessible.`);
     }
     if (error instanceof Error) {
       throw error;

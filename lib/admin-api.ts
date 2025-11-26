@@ -467,8 +467,10 @@ export async function getUserById(id: string): Promise<User> {
       throw new Error('User not found');
     }
     
-    // For other errors, use handleApiError
+    // For other errors, use handleApiError (always throws)
     await handleApiError(response, 'Failed to fetch user');
+    // This line will never execute, but satisfies TypeScript's return type check
+    throw new Error('Failed to fetch user');
   } catch (error) {
     if (error instanceof Error) {
       throw error;

@@ -24,8 +24,15 @@ export default function LoginPage() {
     setError(null);
     setIsSubmitting(true);
 
+    // Validate inputs
+    if (!userId.trim() || !password.trim()) {
+      setError("User ID and password are required");
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
-      await login(userId.trim(), password);
+      await login(userId.trim(), password.trim());
       router.push("/admin");
     } catch (err) {
       console.error("Login failed:", err);

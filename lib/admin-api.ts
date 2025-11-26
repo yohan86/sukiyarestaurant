@@ -1,8 +1,19 @@
 // Mock API functions for admin dashboard
 // These will be replaced with actual API calls later
 
-// Use external backend by default (sukiya-api on port 5001), or Next.js API routes if NEXT_PUBLIC_API_URL is set to '/api'
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'https://sukiyaapifinal.vercel.app/';
+// Use deployed Vercel API by default
+// For local development, set NEXT_PUBLIC_API_URL=http://localhost:5001 in .env.local
+function getApiBaseUrl(): string {
+  // If explicitly set in env, use it
+  if (process.env.NEXT_PUBLIC_API_URL) {
+    return process.env.NEXT_PUBLIC_API_URL;
+  }
+  
+  // Default to production URL
+  return 'https://sukiyaapifinal.vercel.app';
+}
+
+const API_BASE_URL = getApiBaseUrl();
 
 export type OrderStatus = "Received" | "Preparing" | "Ready" | "Completed";
 
@@ -74,12 +85,19 @@ export interface LoginResponse {
 // Authentication API functions
 export async function login(userId: string, password: string): Promise<LoginResponse> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/login`, {
+    // Validate inputs before sending
+    if (!userId || !password) {
+      throw new Error('User ID and password are required');
+    }
+
+    const requestBody = { userId: userId.trim(), password: password.trim() };
+    
+    const response = await fetch(`${API_BASE_URL}/api/auth/login`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({ userId, password }),
+      body: JSON.stringify(requestBody),
     });
     
     if (!response.ok) {
@@ -107,7 +125,7 @@ export async function login(userId: string, password: string): Promise<LoginResp
 
 export async function verifyToken(token: string): Promise<{ valid: boolean; user: AuthUser }> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/verify`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/verify`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -140,7 +158,7 @@ export async function verifyToken(token: string): Promise<{ valid: boolean; user
 
 export async function setPassword(userId: string, password: string): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE_URL}/auth/set-password`, {
+    const response = await fetch(`${API_BASE_URL}/api/auth/set-password`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -202,7 +220,7 @@ export function getAuthHeaders(): HeadersInit {
 // Order API functions - Fetch from MongoDb
 export async function getOrders(): Promise<Order[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/orders`, {
+    const response = await fetch(`${API_BASE_URL}/api/orders`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -235,7 +253,7 @@ export async function updateOrderStatus(
   status: Order["status"]
 ): Promise<Order> {
   try {
-    const response = await fetch(`${API_BASE_URL}/orders/${orderId}/status`, {
+    const response = await fetch(`${API_BASE_URL}/api/orders/${orderId}/status`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify({ status }),
@@ -267,7 +285,7 @@ export async function updateOrderStatus(
 // Menu API functions - Fetch from MongoDB via backend only
 export async function getMenuItems(): Promise<MenuItem[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/menu`, {
+    const response = await fetch(`${API_BASE_URL}/api/menu`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -297,7 +315,7 @@ export async function getMenuItems(): Promise<MenuItem[]> {
 
 export async function createMenuItem(item: Omit<MenuItem, "_id" | "createdAt" | "updatedAt">): Promise<MenuItem> {
   try {
-    const response = await fetch(`${API_BASE_URL}/menu`, {
+    const response = await fetch(`${API_BASE_URL}/api/menu`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(item),
@@ -365,7 +383,7 @@ export async function createMenuItem(item: Omit<MenuItem, "_id" | "createdAt" | 
 
 export async function updateMenuItem(id: string, updates: Partial<MenuItem>): Promise<MenuItem> {
   try {
-    const response = await fetch(`${API_BASE_URL}/menu/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/menu/${id}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify(updates),
@@ -397,7 +415,7 @@ export async function updateMenuItem(id: string, updates: Partial<MenuItem>): Pr
 
 export async function deleteMenuItem(id: string): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE_URL}/menu/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/menu/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });
@@ -434,7 +452,7 @@ export async function deleteMenuItem(id: string): Promise<void> {
 // User Management API Functions
 export async function getUsers(): Promise<User[]> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users`, {
+    const response = await fetch(`${API_BASE_URL}/api/users`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -465,7 +483,7 @@ export async function getUsers(): Promise<User[]> {
 export async function getUserById(id: string): Promise<User> {
   try {
     // Try to fetch directly by ID first
-    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -506,7 +524,7 @@ export async function getUserById(id: string): Promise<User> {
 
 export async function getUserByUserId(userId: string): Promise<User> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/userId/${userId}`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/userId/${userId}`, {
       method: 'GET',
       headers: getAuthHeaders(),
     });
@@ -536,7 +554,7 @@ export async function getUserByUserId(userId: string): Promise<User> {
 
 export async function createUser(user: Omit<User, "_id" | "createdAt" | "updatedAt" | "totalOrders" | "totalSpent" | "lastOrderDate">): Promise<User> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users`, {
+    const response = await fetch(`${API_BASE_URL}/api/users`, {
       method: 'POST',
       headers: getAuthHeaders(),
       body: JSON.stringify(user),
@@ -571,7 +589,7 @@ export async function createUser(user: Omit<User, "_id" | "createdAt" | "updated
 
 export async function updateUser(id: string, updates: Partial<User>): Promise<User> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
       method: 'PATCH',
       headers: getAuthHeaders(),
       body: JSON.stringify(updates),
@@ -603,7 +621,7 @@ export async function updateUser(id: string, updates: Partial<User>): Promise<Us
 
 export async function deleteUser(id: string): Promise<void> {
   try {
-    const response = await fetch(`${API_BASE_URL}/users/${id}`, {
+    const response = await fetch(`${API_BASE_URL}/api/users/${id}`, {
       method: 'DELETE',
       headers: getAuthHeaders(),
     });

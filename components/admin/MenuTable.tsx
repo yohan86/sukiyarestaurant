@@ -66,9 +66,8 @@ export default function MenuTable() {
         alert("Error: Invalid menu item ID");
         return;
       }
-      await deleteMenuItem(itemId);
-      // Refresh the menu items after deletion
-      await handleRefresh();
+      await updateMenuItem(itemId, { isActive: !item.isActive });
+      handleRefresh();
     } catch (error) {
       console.error("Failed to delete item:", error);
       const errorMessage = error instanceof Error ? error.message : "Failed to delete menu item. Please try again.";

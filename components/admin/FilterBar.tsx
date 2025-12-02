@@ -132,7 +132,7 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
 
         {/* Filter by Date */}
         <div className="flex-1">
-          <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
+          <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2 date-picker">
             Order Date
           </label>
           <DatePicker

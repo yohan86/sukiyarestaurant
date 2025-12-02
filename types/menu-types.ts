@@ -1,8 +1,10 @@
 export interface IMenuItem {
-    id:string;
-    title:string;
-    price:number;
-    description:string;
-    image:string;
-    isAvailable:boolean;
+  id: string;
+  _id: string;
+  nameEn: string;
+  nameJp: string;
+  price: number;
+  imageUrl: string;
+  category?: string;
+  isActive: boolean;
 }

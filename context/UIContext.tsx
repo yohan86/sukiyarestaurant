@@ -25,5 +25,6 @@ export const useUI = () => {
     if(context === undefined){
         throw new Error("useUI must be used within a UIProvider");
     }
+    
     return context;
 };

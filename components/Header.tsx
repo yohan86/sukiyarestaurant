@@ -1,3 +1,5 @@
+"use client";
+
 import { ThemeToggle } from "@/app/theme-toggle";
 import Image from "next/image";
 import CartButton from "./CartButton";

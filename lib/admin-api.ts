@@ -158,6 +158,7 @@ export interface AuthUser {
   displayName: string;
   email?: string;
   phone?: string;
+  pictureUrl?: string;
   role: UserRole;
   isActive: boolean;
   createdAt: string;
@@ -167,6 +168,11 @@ export interface AuthUser {
 export interface LoginResponse {
   token: string;
   user: AuthUser;
+}
+
+export interface LineLoginResponse {
+  loginUrl: string;
+  state: string;
 }
 
 // Authentication API functions
@@ -241,6 +247,29 @@ export async function setPassword(userId: string, password: string): Promise<voi
       throw error;
     }
     throw new Error('Failed to set password');
+  }
+}
+
+// LINE Login API functions
+export async function getLineLoginUrl(): Promise<LineLoginResponse> {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/auth/line/login`, {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+    });
+    
+    if (!response.ok) {
+      await handleApiError(response, 'Failed to get LINE login URL');
+    }
+    
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to get LINE login URL');
   }
 }
 

@@ -7,6 +7,22 @@ import { NextRequest, NextResponse } from "next/server";
  */
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
 
+// Ensure this route is treated as dynamic
+export const dynamic = 'force-dynamic';
+export const runtime = 'nodejs';
+
+// Handle OPTIONS for CORS preflight
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'GET, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type',
+    },
+  });
+}
+
 export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams;

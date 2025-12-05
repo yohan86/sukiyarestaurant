@@ -1,8 +1,5 @@
 "use client";
-
-import { useState } from "react";
 import Image from "next/image";
-import MenuItemDetail from "./MenuItemDetail";
 import { Button } from "./ui/button";
 import { useEffect, useState } from "react";
 import { IMenuItem } from "@/types/menu-types"
@@ -10,13 +7,10 @@ import { useCart } from "@/context/CartContext";
 import { useUI } from "@/context/UIContext";
 import { ICartItem } from "@/types/cart-types";
 
-interface MenuItem {
-  id: string;
-  title: string;
-  price: number;
-  image: string;
-  description: string;
-  isAvailable: boolean;
+interface ItemDetails {
+    isOpen:boolean;
+    isClose: ()=> void;
+    item:IMenuItem;
 }
 
 const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
@@ -25,7 +19,7 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
     const [amount, setAmount] = useState(item.price);
     const {dispatch} = useCart();
     const {setIsCartDrawerOpen} = useUI();
-
+    const discountedPrice = item.price - (item.price * (item.discount!/100));
     //increase quntity
     const IncreaseQuantity = ()=> {
         setDishQuantity( prev => prev + 1 );
@@ -112,7 +106,7 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
     )
 };
 
-const MenuItemCard = (item:IMenuItem) => {
+const SpecialOffers = (item:IMenuItem) => {
     const {setIsCartDrawerOpen} = useUI();
     const [isModelOpen, setIsModelOpen] = useState(false);
     const isOpen = ()=> {
@@ -120,7 +114,7 @@ const MenuItemCard = (item:IMenuItem) => {
         setIsCartDrawerOpen(false);
     };
     const isClose = ()=> setIsModelOpen(false);
-
+    const discountedPrice = item.price - (item.price * (item.discount!/100));
     return(
         <>
         <div 
@@ -133,43 +127,22 @@ const MenuItemCard = (item:IMenuItem) => {
                 alt={item.title}
                 fill style={{objectFit:"cover"}}
                 />
+                <span className="absolute top-2 right-2 bg-red-500 text-white font-bold py-1 px-2 rounded">{item.discount}% <br/>OFF</span>
             </div>
             <div className="item-intro px-2 text-white">
                 <h3 className="font-bold">{item.title}</h3>
-                <div>Price: <span>{item.price}</span>&yen;</div>
+                <div>Price: <span  className="line-through decoration-double text-yellow-300 mr-2">
+                    <span>{item.price}</span>&yen;</span>
+                    <span>{discountedPrice}</span>&yen;
+                </div>
             </div>
             <div className="flex absolute inset-x-2 bottom-2 h-10 justify-center">
                 <Button className="text-white">Order Dish</Button>
             </div>
-interface Props {
-  item: MenuItem;
-}
-
-const MenuItemCard: React.FC<Props> = ({ item }) => {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const open = () => setIsModalOpen(true);
-  const close = () => setIsModalOpen(false);
-
-  return (
-    <>
-      <div
-        className="flex flex-col relative gap-2 bg-primary rounded-xl overflow-hidden shadow-md cursor-pointer"
-        onClick={open}
-      >
-        <div className="relative w-full h-44">
-          <Image src={item.image} alt={item.title} fill style={{ objectFit: "cover" }} />
         </div>
-        <div className="p-2 text-white">
-          <h3 className="font-bold">{item.title}</h3>
-          <p>¥{item.price}</p>
-        </div>
-        <div className="p-2">
-          <Button onClick={open}>Order Dish</Button>
-        </div>
-      </div>
-      <MenuItemDetail isOpen={isModalOpen} isClose={close} item={item} />
-    </>
-  );
+        <MenuItemDetail isOpen={isModelOpen} isClose={isClose} item={item} />
+        </>
+    )
 };
 
-export default MenuItemCard;
+export default SpecialOffers;

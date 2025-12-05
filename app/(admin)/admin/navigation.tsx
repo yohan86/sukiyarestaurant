@@ -3,11 +3,41 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { useEffect, useState } from "react";
+import { getOrders } from "@/lib/admin-api";
 
 export default function AdminNavigation() {
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
+  const [unreadCount, setUnreadCount] = useState(0);
+
+  useEffect(() => {
+    async function fetchUnreadCount() {
+      try {
+        const orders = await getOrders();
+        const oneDayAgo = new Date();
+        oneDayAgo.setHours(oneDayAgo.getHours() - 24);
+        
+        // Count recent orders (last 24 hours) as unread notifications
+        const recentCount = orders.filter(order => {
+          const orderDate = new Date(order.createdAt);
+          return orderDate >= oneDayAgo;
+        }).length;
+        
+        setUnreadCount(recentCount);
+      } catch (error) {
+        console.error("Failed to fetch unread count:", error);
+      }
+    }
+    
+    if (user) {
+      fetchUnreadCount();
+      // Refresh count every 30 seconds
+      const interval = setInterval(fetchUnreadCount, 30000);
+      return () => clearInterval(interval);
+    }
+  }, [user]);
 
   const handleLogout = () => {
     logout();
@@ -46,6 +76,34 @@ export default function AdminNavigation() {
             <div className="flex items-center gap-3">
               {user && (
                 <>
+                  {/* Notification Icon */}
+                  <Link
+                    href="/admin/notifications"
+                    className="relative p-2 text-gray-600 hover:text-[#06C755] transition-colors duration-200 rounded-lg hover:bg-white/50 active:scale-95 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
+                    aria-label="Notifications"
+                  >
+                    <svg
+                      className="w-6 h-6"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                      xmlns="http://www.w3.org/2000/svg"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"
+                      />
+                    </svg>
+                    {/* Badge - shows unread count */}
+                    {unreadCount > 0 && (
+                      <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white border-2 border-white shadow-lg">
+                        {unreadCount > 9 ? "9+" : unreadCount}
+                        <span className="sr-only">{unreadCount} new notifications</span>
+                      </span>
+                    )}
+                  </Link>
                   <Link
                     href="/admin/profile"
                     className="hidden sm:flex items-center gap-2 text-sm text-gray-600 font-medium hover:text-[#06C755] transition-colors duration-200 px-3 py-2 rounded-lg hover:bg-white/50"
@@ -90,6 +148,9 @@ export default function AdminNavigation() {
           )}
           <MobileNavLink href="/admin/profile" pathname={pathname}>
             Profile
+          </MobileNavLink>
+          <MobileNavLink href="/admin/notifications" pathname={pathname}>
+            🔔 Notifications
           </MobileNavLink>
           {user && (
             <Link

@@ -33,7 +33,7 @@ async function getMenuItems(): Promise<IMenuItem[]> {
     const data = await response.json();
     
     // Map API response to IMenuItem format
-    // API returns: nameEn, nameJp, price, imageUrl, isActive, etc.
+    // API returns: nameEn, nameJp, price, imageUrl, category, subcategory, isActive, etc.
     return data
       .filter((item: any) => item.isActive !== false) // Only show active items
       .map((item: any) => ({
@@ -43,6 +43,8 @@ async function getMenuItems(): Promise<IMenuItem[]> {
         description: item.description || `${item.nameEn || ''} - ${item.nameJp || ''}`.trim() || 'Delicious dish from our kitchen',
         image: item.imageUrl || '/kottu.jpg',
         isAvailable: item.isActive !== false,
+        category: item.category || '',
+        subcategory: item.subcategory || null,
       }));
   } catch (error) {
     console.error('Error fetching menu items from API:', error);

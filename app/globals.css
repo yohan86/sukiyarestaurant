@@ -27,7 +27,9 @@ body {
   @apply flex w-full py-2 px-5;
 }
 
-
+.date-picker{
+  z-index: 1000;
+}
 
 @layer base {
   :root {

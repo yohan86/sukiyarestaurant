@@ -5,4 +5,6 @@ export interface IMenuItem {
     description:string;
     image:string;
     isAvailable:boolean;
+    offers?:boolean;
+    discount?:number;
 }

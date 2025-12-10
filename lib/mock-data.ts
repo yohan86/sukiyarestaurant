@@ -8,6 +8,7 @@ export const MockData:IMenuItem[] = [
         description: "A meticulously prepared multi-course Japanese dinner...",
         image: "/kottu.jpg", 
         isAvailable:true,
+        category: "Main Course",
     },
     {
         id: "d002",
@@ -16,5 +17,6 @@ export const MockData:IMenuItem[] = [
         description: "Chef's selection of the finest seasonal fish...",
         image: "/sushi.jpg",
         isAvailable:true,
+        category: "Main Course",
     },
 ] 

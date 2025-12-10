@@ -34,13 +34,24 @@ async function getMenuItems(): Promise<IMenuItem[]> {
     
     // Map API response to IMenuItem format
     // API returns: nameEn, nameJp, price, imageUrl, category, subcategory, isActive, etc.
+    interface ApiMenuItem {
+      id?: string;
+      _id?: string;
+      nameEn?: string;
+      nameJp?: string;
+      price?: number;
+      imageUrl?: string;
+      category?: string;
+      subcategory?: string | null;
+      isActive?: boolean;
+    }
     return data
-      .filter((item: any) => item.isActive !== false) // Only show active items
-      .map((item: any) => ({
+      .filter((item: ApiMenuItem) => item.isActive !== false) // Only show active items
+      .map((item: ApiMenuItem) => ({
         id: item.id || item._id || '',
         title: item.nameEn || item.nameJp || 'Untitled',
         price: item.price || 0,
-        description: item.description || `${item.nameEn || ''} - ${item.nameJp || ''}`.trim() || 'Delicious dish from our kitchen',
+        description: `${item.nameEn || ''} - ${item.nameJp || ''}`.trim() || 'Delicious dish from our kitchen',
         image: item.imageUrl || '/kottu.jpg',
         isAvailable: item.isActive !== false,
         category: item.category || '',

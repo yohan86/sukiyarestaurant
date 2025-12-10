@@ -7,4 +7,5 @@ export interface IMenuItem {
     isAvailable:boolean;
     category:string;
     subcategory?:string | null;
+    isAddon?:boolean;
 }

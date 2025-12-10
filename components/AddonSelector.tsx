@@ -51,7 +51,19 @@ export default function AddonSelector({ parentItemId, onClose }: AddonSelectorPr
         if (response.ok) {
           const data = await response.json();
           // Map API response to IMenuItem format
-          const mappedItems: IMenuItem[] = data.map((item: any) => ({
+          interface ApiMenuItem {
+            _id?: string;
+            id?: string;
+            nameEn?: string;
+            nameJp?: string;
+            price?: number;
+            imageUrl?: string;
+            category?: string;
+            subcategory?: string | null;
+            isActive?: boolean;
+            isAddon?: boolean;
+          }
+          const mappedItems: IMenuItem[] = data.map((item: ApiMenuItem) => ({
             id: item._id || item.id,
             title: item.nameEn || item.nameJp,
             price: item.price,

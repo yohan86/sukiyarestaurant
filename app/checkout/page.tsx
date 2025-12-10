@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/lib/auth-context";
@@ -9,11 +9,11 @@ import AddonSelector from "@/components/AddonSelector";
 
 type PaymentMethod = "paypay" | "manual";
 
-export default function CheckoutPage() {
+function CheckoutContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const { items, totalCartAmount, dispatch } = useCart();
-  const { user, isAuthenticated } = useAuth();
+  const { user } = useAuth();
   const [tableNumber, setTableNumber] = useState("");
   const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("paypay");
   const [isProcessing, setIsProcessing] = useState(false);
@@ -303,6 +303,21 @@ export default function CheckoutPage() {
         />
       )}
     </main>
+  );
+}
+
+export default function CheckoutPage() {
+  return (
+    <Suspense fallback={
+      <main className="flex min-h-screen bg-background transition-colors duration-300">
+        <div className="inner-wrapper flex-col mt-[100px] py-8">
+          <h1 className="text-3xl font-bold mb-6">Checkout</h1>
+          <p>Loading...</p>
+        </div>
+      </main>
+    }>
+      <CheckoutContent />
+    </Suspense>
   );
 }
 

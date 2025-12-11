@@ -47,7 +47,9 @@ export default function AddonSelector({ parentItemId, onClose }: AddonSelectorPr
       setLoading(true);
       try {
         const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
-        const response = await fetch(`${apiBaseUrl}/api/menu/addons`);
+        // Pass parentItemId as query parameter to filter addons
+        const url = `${apiBaseUrl}/api/menu/addons${parentItemId ? `?parentItemId=${parentItemId}` : ''}`;
+        const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
           // Map API response to IMenuItem format

@@ -27,6 +27,7 @@ export default function EditFoodModal({
     subcategory: "",
     isActive: true,
     isAddon: false,
+    allowedAddons: [] as string[],
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -43,6 +44,13 @@ export default function EditFoodModal({
     return categories;
   }, [menuItems]);
 
+  // Get all addon items for selection (exclude current item if it's an addon)
+  const addonItems = useMemo(() => {
+    return menuItems.filter(
+      (menuItem) => menuItem.isAddon && menuItem.isActive && menuItem._id !== item?._id
+    );
+  }, [menuItems, item]);
+
   useEffect(() => {
     if (item) {
       setFormData({
@@ -54,6 +62,7 @@ export default function EditFoodModal({
         subcategory: item.subcategory || "",
         isActive: item.isActive,
         isAddon: item.isAddon || false,
+        allowedAddons: item.allowedAddons || [],
       });
       setError(null);
     }
@@ -104,6 +113,7 @@ export default function EditFoodModal({
         subcategory: formData.subcategory.trim() || null,
         isActive: formData.isActive,
         isAddon: formData.isAddon,
+        allowedAddons: formData.allowedAddons,
       });
 
       onSuccess();
@@ -357,6 +367,59 @@ export default function EditFoodModal({
                 </span>
               </label>
             </div>
+
+            {/* Allowed Addons Selection */}
+            {!formData.isAddon && addonItems.length > 0 && (
+              <div>
+                <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
+                  Allowed Addons <span className="text-gray-400 text-xs">(Select which addons can be added to this item)</span>
+                </label>
+                <div className="max-h-48 overflow-y-auto border-2 border-gray-200 rounded-xl p-4 bg-white/80">
+                  {addonItems.length === 0 ? (
+                    <p className="text-gray-500 text-sm">No addon items available. Create addon items first.</p>
+                  ) : (
+                    <div className="space-y-2">
+                      {addonItems.map((addon) => (
+                        <label
+                          key={addon._id}
+                          className="flex items-center gap-3 cursor-pointer p-2 hover:bg-gray-50 rounded-lg"
+                        >
+                          <input
+                            type="checkbox"
+                            checked={formData.allowedAddons.includes(addon._id)}
+                            onChange={(e) => {
+                              if (e.target.checked) {
+                                setFormData({
+                                  ...formData,
+                                  allowedAddons: [...formData.allowedAddons, addon._id],
+                                });
+                              } else {
+                                setFormData({
+                                  ...formData,
+                                  allowedAddons: formData.allowedAddons.filter(
+                                    (id) => id !== addon._id
+                                  ),
+                                });
+                              }
+                            }}
+                            className="w-5 h-5 rounded border-2 border-gray-300 text-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:ring-offset-0 cursor-pointer"
+                          />
+                          <span className="text-sm font-medium text-gray-900 flex-1">
+                            {addon.nameEn} ({addon.nameJp})
+                          </span>
+                          <span className="text-sm text-gray-600">¥{addon.price.toLocaleString()}</span>
+                        </label>
+                      ))}
+                    </div>
+                  )}
+                </div>
+                {formData.allowedAddons.length > 0 && (
+                  <p className="text-xs text-gray-500 mt-2">
+                    {formData.allowedAddons.length} addon{formData.allowedAddons.length !== 1 ? 's' : ''} selected
+                  </p>
+                )}
+              </div>
+            )}
 
             {/* Form Actions */}
             <div className="flex flex-col-reverse sm:flex-row gap-3 sm:justify-end pt-4 border-t-2 border-white/50">

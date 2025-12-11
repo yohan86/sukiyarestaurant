@@ -132,6 +132,7 @@ export interface MenuItem {
   subcategory?: string | null;
   isActive: boolean;
   isAddon?: boolean;
+  allowedAddons?: string[];
   createdAt: string;
   updatedAt: string;
 }

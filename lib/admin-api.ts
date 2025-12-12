@@ -110,6 +110,8 @@ export interface Order {
   userId: string;
   displayName: string;
   tableNumber: string;
+  paymentMethod?: 'paypay' | 'manual';
+  paymentStatus?: 'pending' | 'paid' | null;
   items: Array<{
      itemId: string;
     name: string;
@@ -132,6 +134,7 @@ export interface MenuItem {
   subcategory?: string | null;
   isActive: boolean;
   isAddon?: boolean;
+  allowedAddons?: string[];
   createdAt: string;
   updatedAt: string;
 }

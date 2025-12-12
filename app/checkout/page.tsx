@@ -35,6 +35,43 @@ function CheckoutContent() {
     }
   }, [items.length, router]);
 
+  const createOrder = async () => {
+    // Prepare order items with addons
+    const orderItems = items.map((item) => ({
+      itemId: item.id,
+      quantity: item.quantity,
+      addons: item.addons?.map(addon => ({
+        itemId: addon.id,
+        quantity: addon.quantity,
+      })) || [],
+    }));
+
+    // Get API base URL
+    const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
+
+    // Create order
+    const response = await fetch(`${apiBaseUrl}/api/orders`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        userId: user!.userId || user!._id || "guest",
+        displayName: user!.displayName || "Guest",
+        tableNumber: tableNumber.trim(),
+        items: orderItems,
+        paymentMethod: paymentMethod,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.error || "Failed to create order");
+    }
+
+    return await response.json();
+  };
+
   const handleCheckout = async () => {
     if (!tableNumber.trim()) {
       setError("Please enter a table number");
@@ -53,55 +90,75 @@ function CheckoutContent() {
     setError(null);
 
     try {
-      // Prepare order items with addons
-      const orderItems = items.map((item) => ({
-        itemId: item.id,
-        quantity: item.quantity,
-        addons: item.addons?.map(addon => ({
-          itemId: addon.id,
-          quantity: addon.quantity,
-        })) || [],
-      }));
-
-      // Get API base URL
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
-
-      // Create order
-      const response = await fetch(`${apiBaseUrl}/api/orders`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId: user.userId || user._id || "guest",
-          displayName: user.displayName || "Guest",
-          tableNumber: tableNumber.trim(),
-          items: orderItems,
-          paymentMethod: paymentMethod,
-        }),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json().catch(() => ({}));
-        throw new Error(errorData.error || "Failed to create order");
-      }
-
-      const order = await response.json();
+      const order = await createOrder();
 
       // Handle payment based on method
+      // For PayPay, payment is deferred (pay after meal)
+      // For manual, payment is at counter
+      dispatch({ type: "CLEAR_CART" });
       if (paymentMethod === "paypay") {
-        // TODO: Integrate PayPay payment processing
-        // For now, redirect to success page
-        dispatch({ type: "CLEAR_CART" });
-        router.push(`/checkout/success?orderId=${order.orderId}`);
+        // PayPay - payment pending, can pay after meal
+        router.push(`/checkout/success?orderId=${order.orderId}&payment=paypay&status=pending`);
       } else {
         // Manual payment - order is created, just redirect to success
-        dispatch({ type: "CLEAR_CART" });
         router.push(`/checkout/success?orderId=${order.orderId}&payment=manual`);
       }
     } catch (err) {
       console.error("Checkout error:", err);
       setError(err instanceof Error ? err.message : "Failed to process order");
+      setIsProcessing(false);
+    }
+  };
+
+  const handlePayNow = async () => {
+    if (!tableNumber.trim()) {
+      setError("Please enter a table number");
+      return;
+    }
+
+    if (!user) {
+      setError("Please login to place an order");
+      router.push("/login");
+      return;
+    }
+
+    if (paymentMethod !== "paypay") {
+      setError("Pay Now is only available for PayPay payment method");
+      return;
+    }
+
+    setIsProcessing(true);
+    setError(null);
+
+    try {
+      // Create order
+      const order = await createOrder();
+
+      // Get API base URL
+      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
+
+      // Process payment immediately
+      const paymentResponse = await fetch(`${apiBaseUrl}/api/orders/${order._id}/payment`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          paymentStatus: "paid",
+        }),
+      });
+
+      if (!paymentResponse.ok) {
+        const errorData = await paymentResponse.json().catch(() => ({}));
+        throw new Error(errorData.error || "Failed to process payment");
+      }
+
+      dispatch({ type: "CLEAR_CART" });
+      // Redirect to success page with paid status
+      router.push(`/checkout/success?orderId=${order.orderId}&payment=paypay&status=paid`);
+    } catch (err) {
+      console.error("Pay now error:", err);
+      setError(err instanceof Error ? err.message : "Failed to process payment");
       setIsProcessing(false);
     }
   };
@@ -134,52 +191,54 @@ function CheckoutContent() {
             {/* Payment Method */}
             <div className="bg-white/80 backdrop-blur-md rounded-2xl shadow-lg border border-white/50 p-6">
               <h2 className="text-xl font-bold mb-4">Payment Method</h2>
-              <div className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* PayPay Option */}
-                <label className="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary hover:bg-primary/5">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="paypay"
-                    checked={paymentMethod === "paypay"}
-                    onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                    className="w-5 h-5 text-primary focus:ring-primary"
-                  />
-                  <div className="ml-4 flex-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-[#FF6B35] rounded-lg flex items-center justify-center text-white font-bold">
-                        PP
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg">PayPay (Card Payment)</h3>
-                        <p className="text-sm text-gray-600">Pay securely with PayPay</p>
-                      </div>
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("paypay")}
+                  className={`flex flex-col items-center justify-center p-6 border-2 rounded-xl transition-all duration-200 ${
+                    paymentMethod === "paypay"
+                      ? "border-primary bg-primary/10 shadow-lg scale-105"
+                      : "border-gray-200 hover:border-primary hover:bg-primary/5"
+                  }`}
+                >
+                  <div className="w-16 h-16 bg-[#FF6B35] rounded-lg flex items-center justify-center text-white font-bold text-xl mb-3">
+                    PP
                   </div>
-                </label>
+                  <h3 className="font-bold text-lg mb-1">PayPay</h3>
+                  <p className="text-sm text-gray-600 text-center">Pay after your meal</p>
+                  {paymentMethod === "paypay" && (
+                    <div className="mt-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </button>
 
                 {/* Manual Payment Option */}
-                <label className="flex items-center p-4 border-2 rounded-xl cursor-pointer transition-all hover:border-primary hover:bg-primary/5">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="manual"
-                    checked={paymentMethod === "manual"}
-                    onChange={(e) => setPaymentMethod(e.target.value as PaymentMethod)}
-                    className="w-5 h-5 text-primary focus:ring-primary"
-                  />
-                  <div className="ml-4 flex-1">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gray-600 rounded-lg flex items-center justify-center text-white font-bold">
-                        💵
-                      </div>
-                      <div>
-                        <h3 className="font-bold text-lg">Manual Payment (Over the Counter)</h3>
-                        <p className="text-sm text-gray-600">Pay at the counter when your order is ready</p>
-                      </div>
-                    </div>
+                <button
+                  type="button"
+                  onClick={() => setPaymentMethod("manual")}
+                  className={`flex flex-col items-center justify-center p-6 border-2 rounded-xl transition-all duration-200 ${
+                    paymentMethod === "manual"
+                      ? "border-primary bg-primary/10 shadow-lg scale-105"
+                      : "border-gray-200 hover:border-primary hover:bg-primary/5"
+                  }`}
+                >
+                  <div className="w-16 h-16 bg-gray-600 rounded-lg flex items-center justify-center text-white font-bold text-2xl mb-3">
+                    💵
                   </div>
-                </label>
+                  <h3 className="font-bold text-lg mb-1">Manual Payment</h3>
+                  <p className="text-sm text-gray-600 text-center">Pay at the counter</p>
+                  {paymentMethod === "manual" && (
+                    <div className="mt-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center">
+                      <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                  )}
+                </button>
               </div>
             </div>
 
@@ -267,26 +326,60 @@ function CheckoutContent() {
                 </div>
               )}
 
-              <button
-                onClick={handleCheckout}
-                disabled={isProcessing || !tableNumber.trim()}
-                className="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {isProcessing ? (
-                  <span className="flex items-center justify-center gap-2">
-                    <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    Processing...
-                  </span>
-                ) : paymentMethod === "paypay" ? (
-                  "Pay with PayPay"
-                ) : (
-                  "Place Order"
-                )}
-              </button>
+              {paymentMethod === "paypay" ? (
+                <>
+                  {/* Pay Now Button */}
+                  <button
+                    onClick={handlePayNow}
+                    disabled={isProcessing || !tableNumber.trim()}
+                    className="w-full py-3 bg-[#FF6B35] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-3"
+                  >
+                    {isProcessing ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Processing Payment...
+                      </span>
+                    ) : (
+                      "Pay Now"
+                    )}
+                  </button>
+
+                  {/* Place Order (Pay Later) Button */}
+                  <button
+                    onClick={handleCheckout}
+                    disabled={isProcessing || !tableNumber.trim()}
+                    className="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-3"
+                  >
+                    {isProcessing ? (
+                      <span className="flex items-center justify-center gap-2">
+                        <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                        Processing...
+                      </span>
+                    ) : (
+                      "Place Order (Pay Later)"
+                    )}
+                  </button>
+                </>
+              ) : (
+                <button
+                  onClick={handleCheckout}
+                  disabled={isProcessing || !tableNumber.trim()}
+                  className="w-full py-3 bg-primary text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed mb-3"
+                >
+                  {isProcessing ? (
+                    <span className="flex items-center justify-center gap-2">
+                      <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                      Processing...
+                    </span>
+                  ) : (
+                    "Place Order"
+                  )}
+                </button>
+              )}
 
               <button
                 onClick={() => router.back()}
-                className="w-full mt-3 py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all duration-200"
+                className="w-full py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all duration-200"
               >
                 Back to Cart
               </button>

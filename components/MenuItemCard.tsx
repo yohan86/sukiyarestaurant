@@ -30,6 +30,26 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
         setAmount( prev => dishQuantity > 1? prev - item.price : item.price );
     };
 
+    // Handle Add to Cart - Just add to cart without navigating
+    const handleAddToCart = () => {
+        // Add item to cart
+        dispatch({
+            type: "ADD_ITEM",
+            payload: {
+                ...item,
+                quantity: dishQuantity,
+                totalAmount: amount,
+            }
+        });
+        
+        // Close modal
+        isClose();
+        
+        // Reset quantity for next time
+        setDishQuantity(1);
+        setAmount(item.price);
+    };
+
     // Handle Add Order - Add to cart and navigate to checkout
     const handleAddOrder = () => {
         // Add item to cart
@@ -47,6 +67,10 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
         
         // Navigate to checkout page
         router.push("/checkout");
+        
+        // Reset quantity for next time
+        setDishQuantity(1);
+        setAmount(item.price);
     };
 
     return(
@@ -88,12 +112,19 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
                                 <span className="flex mt-1 text-white font-semibold">Amount: <span className=" ml-1 text-white  font-bold">{amount} &yen;</span></span>
                             </div>
                         </div>
-                        <div className="flex flex-col" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex flex-col gap-2" onClick={(e) => e.stopPropagation()}>
                             <Button 
-                                className=" text-white"
+                                className="text-white bg-primary hover:bg-primary/90"
+                                onClick={handleAddToCart}
+                            >
+                                Add to Cart
+                            </Button>
+                            <Button 
+                                variant="outline"
+                                className="text-primary border-primary hover:bg-primary/10"
                                 onClick={handleAddOrder}
                             >
-                                Add Order
+                                Add & Checkout
                             </Button>
                         </div>
                         

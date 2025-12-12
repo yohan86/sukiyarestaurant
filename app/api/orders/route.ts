@@ -58,6 +58,8 @@ export async function GET() {
         userId: order.userId,
         displayName: order.displayName,
         tableNumber: order.tableNumber,
+        paymentMethod: order.paymentMethod || 'manual',
+        paymentStatus: order.paymentStatus || null,
         items: items,
         total: order.total,
         status: order.status,

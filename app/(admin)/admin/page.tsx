@@ -592,6 +592,28 @@ function OrderDetailsModal({
                 </span>
               </div>
             </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 md:gap-5 mt-5 md:mt-6">
+              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/50 min-h-[70px] flex flex-col justify-center">
+                <p className="text-sm md:text-base font-bold text-gray-600 uppercase tracking-wide">Payment Method</p>
+                <p className="text-base md:text-lg text-gray-700 mt-3 font-bold">
+                  {order.paymentMethod === 'paypay' ? 'PayPay' : order.paymentMethod === 'manual' ? 'Manual (Counter)' : 'N/A'}
+                </p>
+              </div>
+              <div className="bg-white/60 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/50 min-h-[70px] flex flex-col justify-center">
+                <p className="text-sm md:text-base font-bold text-gray-600 uppercase tracking-wide mb-3">Payment Status</p>
+                <span
+                  className={`inline-block text-sm md:text-base font-bold px-4 py-2.5 md:px-5 md:py-3 rounded-full border-2 shadow-sm min-h-[44px] flex items-center ${
+                    order.paymentStatus === 'paid'
+                      ? 'bg-green-100 text-green-800 border-green-300'
+                      : order.paymentStatus === 'pending'
+                      ? 'bg-yellow-100 text-yellow-800 border-yellow-300'
+                      : 'bg-gray-100 text-gray-800 border-gray-300'
+                  }`}
+                >
+                  {order.paymentStatus === 'paid' ? 'Paid' : order.paymentStatus === 'pending' ? 'Pending' : 'N/A'}
+                </span>
+              </div>
+            </div>
             <div className="mt-5 md:mt-6 bg-white/60 backdrop-blur-sm rounded-xl p-4 md:p-5 border border-white/50 min-h-[70px] flex flex-col justify-center">
               <p className="text-sm md:text-base font-bold text-gray-600 uppercase tracking-wide">Time</p>
               <p className="text-base md:text-lg text-gray-700 mt-3 font-bold">{timeAgo}</p>

@@ -355,6 +355,33 @@ export async function updateOrderStatus(
   }
 }
 
+/**
+ * Update payment status for an order (e.g. mark after-dining payments as paid).
+ */
+export async function updateOrderPaymentStatus(
+  orderId: string,
+  paymentStatus: 'pending' | 'paid'
+): Promise<Order> {
+  try {
+    const response = await fetchWithTimeout(`${API_BASE_URL}/api/orders/${orderId}/payment`, {
+      method: 'PATCH',
+      headers: getAuthHeaders(),
+      body: JSON.stringify({ paymentStatus }),
+    });
+
+    if (!response.ok) {
+      await handleApiError(response, 'Failed to update payment status');
+    }
+
+    return response.json();
+  } catch (error) {
+    if (error instanceof Error) {
+      throw error;
+    }
+    throw new Error('Failed to update payment status');
+  }
+}
+
 // Menu API functions - Fetch from MongoDB via backend only
 export async function getMenuItems(): Promise<MenuItem[]> {
   try {

@@ -85,7 +85,7 @@ export default function OrderTable() {
                     Status
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Actions
+                    Actions / Payment
                   </th>
                 </tr>
               </thead>
@@ -99,6 +99,14 @@ export default function OrderTable() {
                       const updateOrder = (o: Order) => {
                         const oId = o._id;
                         return oId === orderId ? { ...o, status: newStatus } : o;
+                      };
+                      setOrders((prev) => prev.map(updateOrder));
+                      setAllOrders((prev) => prev.map(updateOrder));
+                    }}
+                    onPaymentStatusChange={(orderId, newPaymentStatus) => {
+                      const updateOrder = (o: Order) => {
+                        const oId = o._id;
+                        return oId === orderId ? { ...o, paymentStatus: newPaymentStatus } : o;
                       };
                       setOrders((prev) => prev.map(updateOrder));
                       setAllOrders((prev) => prev.map(updateOrder));

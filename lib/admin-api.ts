@@ -10,7 +10,7 @@ function getApiBaseUrl(): string {
   }
   
   // Default to production URL
-  return 'https://sukiya-api-production.up.railway.app';
+  return 'https://sukiyaapi.vercel.app';
 }
 
 const API_BASE_URL = getApiBaseUrl();

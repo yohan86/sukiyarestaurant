@@ -1,4 +1,5 @@
 import { CartAction, CartState, ICartItem } from "@/types/cart-types";
+import { useReducer } from "react";
 
 const calculateTotals = (items:ICartItem[]): {totalCartAmount:number} => {
     const totalCartAmount = items.reduce((total, item)=> total + item.totalAmount, 0);

@@ -21,8 +21,15 @@ function CallbackContent() {
         verifyToken(token)
           .then((result) => {
             if (result.valid) {
-              // Redirect to home - AuthProvider will pick up the token
-              router.push("/");
+              // Redirect to home, preserving table number from QR if available
+              let target = "/";
+              if (typeof window !== "undefined") {
+                const storedTable = sessionStorage.getItem("table_number");
+                if (storedTable) {
+                  target = `/?table=${encodeURIComponent(storedTable)}`;
+                }
+              }
+              router.push(target);
             } else {
               router.push("/login?error=invalid_token");
             }

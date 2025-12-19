@@ -1,21 +1,40 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { Suspense, useEffect, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getLineLoginUrl } from "@/lib/admin-api";
-import { setAuthToken } from "@/lib/admin-api";
 import { useAuth } from "@/lib/auth-context";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
-  const { isAuthenticated, login } = useAuth();
+  const searchParams = useSearchParams();
+  const { isAuthenticated } = useAuth();
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  // Capture table number from QR (URL) and store in sessionStorage
+  useEffect(() => {
+    const table =
+      searchParams.get("table") ||
+      searchParams.get("tableNumber") ||
+      searchParams.get("table_no");
+
+    if (typeof window !== "undefined" && table) {
+      sessionStorage.setItem("table_number", table);
+    }
+  }, [searchParams]);
 
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated) {
-      router.push("/");
+      let target = "/";
+      if (typeof window !== "undefined") {
+        const storedTable = sessionStorage.getItem("table_number");
+        if (storedTable) {
+          target = `/?table=${encodeURIComponent(storedTable)}`;
+        }
+      }
+      router.push(target);
     }
   }, [isAuthenticated, router]);
 
@@ -108,5 +127,16 @@ export default function LoginPage() {
   );
 }
 
-
-
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center bg-background">
+        <div className="text-center">
+          <p className="text-muted-foreground">Loading login...</p>
+        </div>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
+  );
+}

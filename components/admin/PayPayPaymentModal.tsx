@@ -181,7 +181,7 @@ export default function PayPayPaymentModal({
                 </h4>
                 <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
                   <li>Open the PayPay app on your smartphone</li>
-                  <li>Tap the "Scan" button in PayPay</li>
+                  <li>Tap the &quot;Scan&quot; button in PayPay</li>
                   <li>Point your camera at the QR code above</li>
                   <li>Confirm the payment amount: ¥{order.total.toLocaleString()}</li>
                   <li>Complete the payment in PayPay</li>

@@ -1,14 +1,16 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { Suspense, useState } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import AddonSelector from "@/components/AddonSelector";
-import { useState } from "react";
 
-export default function CartPage() {
+function CartContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
+  const tableFromQr = searchParams.get("table");
   const { items, totalCartAmount, dispatch } = useCart();
   const [selectedItemForAddons, setSelectedItemForAddons] = useState<string | null>(null);
 
@@ -172,7 +174,13 @@ export default function CartPage() {
                 </div>
 
                 <Button
-                  onClick={() => router.push("/checkout")}
+                  onClick={() => {
+                    if (tableFromQr) {
+                      router.push(`/checkout?table=${encodeURIComponent(tableFromQr)}`);
+                    } else {
+                      router.push("/checkout");
+                    }
+                  }}
                   className="w-full bg-primary text-white hover:bg-primary/90 py-3 text-lg font-bold"
                 >
                   Proceed to Checkout
@@ -180,7 +188,13 @@ export default function CartPage() {
 
                 <Button
                   variant="outline"
-                  onClick={() => router.push("/")}
+                  onClick={() => {
+                    if (tableFromQr) {
+                      router.push(`/?table=${encodeURIComponent(tableFromQr)}`);
+                    } else {
+                      router.push("/");
+                    }
+                  }}
                   className="w-full mt-3"
                 >
                   Continue Shopping
@@ -199,6 +213,21 @@ export default function CartPage() {
         )}
       </div>
     </div>
+  );
+}
+
+export default function CartPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen bg-background">
+        <div className="inner-wrapper flex-col mt-[100px] py-8">
+          <h1 className="text-3xl font-bold mb-4">Your Cart</h1>
+          <p className="text-muted-foreground">Loading cart...</p>
+        </div>
+      </div>
+    }>
+      <CartContent />
+    </Suspense>
   );
 }
 

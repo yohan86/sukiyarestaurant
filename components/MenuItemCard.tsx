@@ -2,7 +2,7 @@
 import Image from "next/image";
 import { Button } from "./ui/button";
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { IMenuItem } from "@/types/menu-types"
 
@@ -17,6 +17,7 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
     const [amount, setAmount] = useState(item.price);
     const { dispatch } = useCart();
     const router = useRouter();
+    const searchParams = useSearchParams();
     
     if(!isOpen) return null;
     //increase quntity
@@ -52,6 +53,8 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
 
     // Handle Add Order - Add to cart and navigate to checkout
     const handleAddOrder = () => {
+        const tableFromQr = searchParams.get("table");
+
         // Add item to cart
         dispatch({
             type: "ADD_ITEM",
@@ -66,7 +69,11 @@ const  MenuItemDetail: React.FC<ItemDetails> = ({isOpen, isClose, item}) => {
         isClose();
         
         // Navigate to checkout page
-        router.push("/checkout");
+        if (tableFromQr) {
+            router.push(`/checkout?table=${encodeURIComponent(tableFromQr)}`);
+        } else {
+            router.push("/checkout");
+        }
         
         // Reset quantity for next time
         setDishQuantity(1);

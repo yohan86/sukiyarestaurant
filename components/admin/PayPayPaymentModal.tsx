@@ -65,6 +65,11 @@ export default function PayPayPaymentModal({
 
   if (!isOpen || !mounted) return null;
 
+  // Ensure document.body exists before creating portal
+  if (typeof document === 'undefined' || !document.body) {
+    return null;
+  }
+
   const modalContent = (
     <div
       className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 bg-black/70 backdrop-blur-md"
@@ -176,7 +181,7 @@ export default function PayPayPaymentModal({
                 </h4>
                 <ol className="text-sm text-blue-800 space-y-2 list-decimal list-inside">
                   <li>Open the PayPay app on your smartphone</li>
-                  <li>Tap the "Scan" button in PayPay</li>
+                  <li>Tap the &quot;Scan&quot; button in PayPay</li>
                   <li>Point your camera at the QR code above</li>
                   <li>Confirm the payment amount: ¥{order.total.toLocaleString()}</li>
                   <li>Complete the payment in PayPay</li>

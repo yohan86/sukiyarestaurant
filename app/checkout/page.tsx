@@ -20,11 +20,20 @@ function CheckoutContent() {
   const [error, setError] = useState<string | null>(null);
   const [selectedItemForAddons, setSelectedItemForAddons] = useState<string | null>(null);
 
-  // Get table number from URL params if available
+  // Get table number from URL params (QR code) if available
   useEffect(() => {
-    const table = searchParams.get("table");
+    // Support multiple possible param names just in case QR/LINE uses a different one
+    const table =
+      searchParams.get("table") ||
+      searchParams.get("tableNumber") ||
+      searchParams.get("table_no");
     if (table) {
       setTableNumber(table);
+      setError(null);
+    } else {
+      // If there's no table in the URL, don't allow checkout
+      setTableNumber("");
+      setError("Table number not found. Please scan the table QR code again.");
     }
   }, [searchParams]);
 
@@ -74,7 +83,7 @@ function CheckoutContent() {
 
   const handleCheckout = async () => {
     if (!tableNumber.trim()) {
-      setError("Please enter a table number");
+      setError("Table number is missing. Please scan the table QR code again.");
       return;
     }
 
@@ -112,7 +121,7 @@ function CheckoutContent() {
 
   const handlePayNow = async () => {
     if (!tableNumber.trim()) {
-      setError("Please enter a table number");
+      setError("Table number is missing. Please scan the table QR code again.");
       return;
     }
 
@@ -181,11 +190,14 @@ function CheckoutContent() {
               <input
                 type="text"
                 value={tableNumber}
-                onChange={(e) => setTableNumber(e.target.value)}
-                placeholder="Enter table number"
-                className="w-full rounded-xl border-2 border-gray-200 bg-white px-4 py-3 text-base font-medium text-gray-900 shadow-sm focus:border-primary focus:ring-2 focus:ring-primary/20 focus:outline-none transition-all duration-200"
+                readOnly
+                placeholder="Table number comes from the QR code"
+                className="w-full rounded-xl border-2 border-gray-200 bg-gray-100 px-4 py-3 text-base font-medium text-gray-900 shadow-sm focus:outline-none cursor-not-allowed"
                 required
               />
+              <p className="mt-2 text-sm text-gray-500">
+                You don&apos;t need to type the table number. It is automatically set from the table QR code.
+              </p>
             </div>
 
             {/* Payment Method */}

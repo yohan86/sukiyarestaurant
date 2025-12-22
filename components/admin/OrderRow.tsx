@@ -4,7 +4,6 @@ import { useState } from "react";
 import { type Order, updateOrderPaymentStatus } from "@/lib/admin-api";
 import StatusBadge from "./StatusBadge";
 import StatusSelect from "./StatusSelect";
-import PayPayPaymentModal from "./PayPayPaymentModal";
 
 interface OrderRowProps {
   order: Order;
@@ -15,7 +14,7 @@ const PAYMENT_OPTIONS = [
   { value: "pending", label: "Pending" },
   { value: "paypay_complete", label: "Complete with PayPay" },
   { value: "manual_complete", label: "Complete Manual Pay" },
-  { value: "cancel", label: "Order Cancel" },
+  { value: "cancel", label: "Set as Pending / Cancel" },
 ] as const;
 
 
@@ -25,7 +24,6 @@ export default function OrderRow({
   onPaymentStatusChange,
 }: OrderRowProps) {
   const [isUpdatingPayment, setIsUpdatingPayment] = useState(false);
-  const [isPaymentModalOpen, setIsPaymentModalOpen] = useState(false);
 
   // Format date and time
   const orderDate = new Date(order.createdAt).toLocaleDateString("en-US", {
@@ -65,18 +63,14 @@ export default function OrderRow({
     }
   };
   const handlePaymentSelect = async (value: string) => {
-    if (value === "paypay_complete") {
-      setIsPaymentModalOpen(true);
-      return;
-    }
+    if (isUpdatingPayment) return;
 
     try {
       setIsUpdatingPayment(true);
 
       let newStatus: Order["paymentStatus"] = "pending";
 
-      if (value === "manual_complete") newStatus = "paid";
-      if (value === "cancel") newStatus = "unpaid";
+      if (value === "paypay_complete" || value === "manual_complete") newStatus = "paid";
 
       const updated = await updateOrderPaymentStatus(order._id, newStatus);
       onPaymentStatusChange(order._id, updated.paymentStatus ?? newStatus);
@@ -195,18 +189,6 @@ export default function OrderRow({
           </div>
         </td>
       </tr>
-
-      {/* PayPay Payment Modal - Rendered outside table for valid HTML */}
-      {order.paymentMethod === "paypay" && (
-        <PayPayPaymentModal
-          order={order}
-          isOpen={isPaymentModalOpen}
-          onClose={() => setIsPaymentModalOpen(false)}
-          onPaymentComplete={(orderId, paymentStatus) => {
-            onPaymentStatusChange(orderId, paymentStatus);
-          }}
-        />
-      )}
     </>
   );
 }

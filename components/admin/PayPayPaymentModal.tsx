@@ -19,6 +19,8 @@ export default function PayPayPaymentModal({
   const [qrUrl, setQrUrl] = useState<string | null>(null);
   const [qrError, setQrError] = useState<string | null>(null);
   const [qrLoading, setQrLoading] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
+  const [retryKey, setRetryKey] = useState(0);
 
   const qrEndpoint = process.env.NEXT_PUBLIC_PAYPAY_QR_ENDPOINT;
 
@@ -45,23 +47,27 @@ export default function PayPayPaymentModal({
       try {
         setQrLoading(true);
         setQrError(null);
+        setImageLoadError(false);
         const res = await fetch(requestUrl);
         if (!res.ok) {
           const data = await res.json().catch(() => ({}));
           throw new Error(data.error || `QR request failed (${res.status})`);
         }
         const data = await res.json();
+        // Prioritize qrUrl (the actual QR code image URL) over paymentUrl (the payment page URL)
         const url =
+          data?.qrUrl ||
           data?.paypayQrUrl ||
           data?.paypayQrCode ||
           data?.qrCodeUrl ||
-          data?.paymentUrl ||
-          data?.qrUrl ||
           data?.url;
         if (!url) {
           throw new Error("QR URL missing in backend response.");
         }
-        if (!cancelled) setQrUrl(url);
+        if (!cancelled) {
+          setQrUrl(url);
+          setImageLoadError(false);
+        }
       } catch (error) {
         if (!cancelled) {
           setQrError(error instanceof Error ? error.message : "Failed to load PayPay QR.");
@@ -76,7 +82,7 @@ export default function PayPayPaymentModal({
     return () => {
       cancelled = true;
     };
-  }, [isOpen, requestUrl]);
+  }, [isOpen, requestUrl, retryKey]);
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
@@ -158,22 +164,50 @@ export default function PayPayPaymentModal({
               </p>
             ) : qrUrl ? (
               <div className="space-y-3">
-                <div className="inline-block bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img
-                    src={qrUrl}
-                    alt="PayPay QR Code"
-                    className="w-48 h-48 object-contain"
-                  />
-                </div>
-                <a
-                  href={qrUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#ff6b35] hover:bg-[#e55f2f] transition-colors"
-                >
-                  Open in PayPay
-                </a>
+                {imageLoadError ? (
+                  <div className="py-6 text-sm text-red-600">
+                    <p className="font-semibold mb-2">Failed to load QR code image</p>
+                    <p className="text-xs text-gray-500">The QR code URL may be invalid or blocked.</p>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImageLoadError(false);
+                        setQrUrl(null);
+                        setQrError(null);
+                        setRetryKey((prev) => prev + 1);
+                      }}
+                      className="mt-3 px-3 py-1.5 rounded-lg text-xs font-semibold bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors"
+                    >
+                      Retry
+                    </button>
+                  </div>
+                ) : (
+                  <div className="inline-block bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img
+                      src={qrUrl}
+                      alt="PayPay QR Code"
+                      className="w-48 h-48 object-contain"
+                      onError={() => {
+                        setImageLoadError(true);
+                        console.error("Failed to load QR code image from:", qrUrl);
+                      }}
+                      onLoad={() => {
+                        setImageLoadError(false);
+                      }}
+                    />
+                  </div>
+                )}
+                {!imageLoadError && (
+                  <a
+                    href={qrUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#ff6b35] hover:bg-[#e55f2f] transition-colors"
+                  >
+                    Open in PayPay
+                  </a>
+                )}
               </div>
             ) : (
               <p className="text-sm text-gray-600">

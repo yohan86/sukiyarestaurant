@@ -23,6 +23,14 @@ export default function PayPayPaymentModal({
     (order as any)?.qrCodeUrl ||
     (order as any)?.paymentUrl ||
     (order as any)?.qrUrl;
+
+  // Fallback: generate a QR that points to the public payment page for this order
+  const fallbackPaymentUrl =
+    typeof window !== "undefined"
+      ? `${window.location.origin}/payment/${order.orderId}`
+      : "";
+  const qrImageSrc =
+    qrUrl || (fallbackPaymentUrl ? `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(fallbackPaymentUrl)}` : null);
   if (!isOpen) return null;
   if (typeof document === "undefined") return null;
 
@@ -93,24 +101,35 @@ export default function PayPayPaymentModal({
 
           <div className="bg-white border border-dashed border-gray-300 rounded-xl p-4 text-center">
             <h3 className="font-bold text-gray-900 mb-3">PayPay QR</h3>
-            {qrUrl ? (
+            {qrImageSrc ? (
               <div className="space-y-3">
                 <div className="inline-block bg-white p-3 rounded-xl border border-gray-200 shadow-sm">
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
-                    src={qrUrl}
+                    src={qrImageSrc}
                     alt="PayPay QR Code"
                     className="w-48 h-48 object-contain"
                   />
                 </div>
-                <a
-                  href={qrUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#ff6b35] hover:bg-[#e55f2f] transition-colors"
-                >
-                  Open in PayPay
-                </a>
+                {qrUrl ? (
+                  <a
+                    href={qrUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#ff6b35] hover:bg-[#e55f2f] transition-colors"
+                  >
+                    Open in PayPay
+                  </a>
+                ) : fallbackPaymentUrl ? (
+                  <a
+                    href={fallbackPaymentUrl}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-semibold text-white bg-[#ff6b35] hover:bg-[#e55f2f] transition-colors"
+                  >
+                    Open payment page
+                  </a>
+                ) : null}
               </div>
             ) : (
               <p className="text-sm text-gray-600">

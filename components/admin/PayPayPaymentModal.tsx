@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { createPortal } from "react-dom";
 import { type Order, updateOrderPaymentStatus } from "@/lib/admin-api";
 
 interface PayPayPaymentModalProps {
@@ -16,6 +17,7 @@ export default function PayPayPaymentModal({
 }: PayPayPaymentModalProps) {
   const [isSaving, setIsSaving] = useState(false);
   if (!isOpen) return null;
+  if (typeof document === "undefined") return null;
 
   const handleConfirm = async () => {
     if (isSaving) return;
@@ -31,7 +33,7 @@ export default function PayPayPaymentModal({
     }
   };
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm">
       <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg border border-gray-200">
         <div className="px-6 py-4 border-b border-gray-100 flex items-start justify-between gap-4">
@@ -106,6 +108,7 @@ export default function PayPayPaymentModal({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

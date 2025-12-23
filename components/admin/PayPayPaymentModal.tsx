@@ -44,6 +44,12 @@ export default function PayPayPaymentModal({
 
     let cancelled = false;
     async function fetchQr() {
+      if (!requestUrl) {
+        setQrError("PayPay QR endpoint is not configured. Set NEXT_PUBLIC_PAYPAY_QR_ENDPOINT.");
+        setQrLoading(false);
+        return;
+      }
+
       try {
         setQrLoading(true);
         setQrError(null);

@@ -4,11 +4,60 @@ import { useUI } from "@/context/UIContext"
 import { useRouter } from "next/navigation";
 import QuantityControl from "./QuantityControl";
 import { Button } from "./ui/button";
+import { useState } from "react";
+import QRCode from "qrcode";
 
 const CartDrawer = () => {
     const {items, totalCartAmount, dispatch} = useCart();
     const {isCartDrawerOpen, setIsCartDrawerOpen} = useUI();
     const router = useRouter();
+
+    const [qrUrl, setQrUrl] = useState<string | null>(null);
+const [qrImage, setQrImage] = useState<string | null>(null);
+
+//PAYPAY START
+  const [loading, setLoading] = useState(false);
+
+  const payWithPayPay = async () => {
+    setLoading(true);
+
+    try {
+      const res = await fetch("/api/paypay-payment", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          amount: totalCartAmount,
+          description: "Checkout order payment"
+        })
+      });
+
+        const data = await res.json();
+    const deeplink = data?.raw?.data?.deeplink;
+
+    if (!deeplink) {
+      alert("PayPay did not return a deeplink");
+      return;
+    }
+
+    // Generate QR image from deeplink
+    const qrUrl = await QRCode.toDataURL(deeplink);
+    setQrImage(qrUrl);
+
+      // Automatic redirect to PayPay
+     // window.location.href = url;
+     setQrUrl(qrUrl);
+
+
+    } catch (err) {
+      console.error("PayPay error", err);
+      alert("Payment request failed");
+    }
+
+    setLoading(false);
+  };
+    //END PAYPAY
 
     const handleClose = ()=> setIsCartDrawerOpen(false);
 
@@ -75,13 +124,16 @@ const CartDrawer = () => {
                         <div className="text-white text-3xl font-semibold py-1">Total: {totalCartAmount}&yen;</div>
                         <div className="btn-wrapper flex gap-2">
                             <Button onClick={handleClose}>Add More</Button>
-                            <Button variant="red">Proceed</Button>
+                            <Button variant="red" onClick={payWithPayPay}>Proceed</Button>
+                            <h2 className="text-center font-semibold mb-3">Scan with PayPay</h2>
+      <img src={qrImage!} alt="PayPay QR" className="w-20 h-auto" />
                         </div>
                         
                     </div>
                 </div>
             </div>
         </div>
+
     )
 }
 

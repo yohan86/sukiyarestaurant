@@ -1,8 +1,10 @@
 import MenuItemCard from "@/components/MenuItemCard";
 import SpecialOffers from "@/components/SpecialOffers";
 import {MockData as data} from "@/lib/mock-data";
+import PayPayConnectButton from "@/components/PayPayConnectButton";
 
 export default function Home() {
+
   const offers = data.filter(item => item.offers).length;
   return (
     <main className="flex min-h-screen bg-background transition-colors duration-300">
@@ -27,6 +29,9 @@ export default function Home() {
           </div>
         }
       </div>
+
+
+        <PayPayConnectButton />
       
     </main>
   );

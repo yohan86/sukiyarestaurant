@@ -1,9 +1,8 @@
 "use client";
 
-import { Suspense, useState, useEffect } from "react";
+import { Suspense } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import PayPayCheckoutModal from "@/components/PayPayCheckoutModal";
 
 function CheckoutSuccessContent() {
   const searchParams = useSearchParams();
@@ -11,49 +10,6 @@ function CheckoutSuccessContent() {
   const orderId = searchParams.get("orderId");
   const paymentMethod = searchParams.get("payment");
   const paymentStatus = searchParams.get("status");
-
-  const [showPayPayModal, setShowPayPayModal] = useState(false);
-  const [orderAmount, setOrderAmount] = useState<number>(0);
-  const [isLoadingOrder, setIsLoadingOrder] = useState(false);
-
-  useEffect(() => {
-    if (orderId && paymentMethod === "paypay" && paymentStatus === "pending") {
-      fetchOrderAmount();
-    }
-  }, [orderId, paymentMethod, paymentStatus]);
-
-  const fetchOrderAmount = async () => {
-    if (!orderId) return;
-    try {
-      setIsLoadingOrder(true);
-      const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
-      const response = await fetch(`${apiBaseUrl}/api/orders/${orderId}`);
-      if (response.ok) {
-        const data = await response.json();
-        setOrderAmount(data.total);
-      }
-    } catch (error) {
-      console.error("Failed to fetch order details", error);
-    } finally {
-      setIsLoadingOrder(false);
-    }
-  };
-
-  const handlePayNowClick = () => {
-    if (orderAmount > 0) {
-      setShowPayPayModal(true);
-    } else {
-      // If amount not loaded yet, try fetching again or show error
-      fetchOrderAmount().then(() => setShowPayPayModal(true));
-    }
-  };
-
-  const handlePaymentComplete = () => {
-    setShowPayPayModal(false);
-    router.refresh(); // Refresh to update status if backend updates it, or redirect
-    // Optionally redirect to a "paid" version of this page or reload
-    window.location.href = `/checkout/success?orderId=${orderId}&payment=paypay&status=paid`;
-  };
 
   return (
     <main className="flex min-h-screen bg-background transition-colors duration-300">
@@ -78,7 +34,7 @@ function CheckoutSuccessContent() {
             </div>
 
             <h1 className="text-3xl font-bold mb-4">Order Placed Successfully!</h1>
-
+            
             {orderId && (
               <p className="text-lg text-gray-600 mb-2">
                 Order ID: <span className="font-bold text-primary">{orderId}</span>
@@ -100,13 +56,12 @@ function CheckoutSuccessContent() {
                   You can pay with PayPay after enjoying your meal. We&apos;ll notify you when your order is ready.
                 </p>
                 {orderId && (
-                  <button
-                    onClick={handlePayNowClick}
-                    disabled={isLoadingOrder}
-                    className="inline-block mt-2 px-4 py-2 bg-[#FF6B35] text-white rounded-lg font-bold hover:bg-[#FF6B35]/90 transition-all duration-200 text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                  <Link
+                    href={`/payment/${orderId}`}
+                    className="inline-block mt-2 px-4 py-2 bg-[#FF6B35] text-white rounded-lg font-bold hover:bg-[#FF6B35]/90 transition-all duration-200 text-sm"
                   >
-                    {isLoadingOrder ? "Loading..." : "Pay Now with PayPay"}
-                  </button>
+                    Pay Now with PayPay
+                  </Link>
                 )}
               </div>
             ) : paymentMethod === "paypay" && paymentStatus === "paid" ? (
@@ -146,16 +101,6 @@ function CheckoutSuccessContent() {
           </div>
         </div>
       </div>
-
-      {showPayPayModal && orderId && (
-        <PayPayCheckoutModal
-          isOpen={showPayPayModal}
-          onClose={() => setShowPayPayModal(false)}
-          orderId={orderId}
-          amount={orderAmount}
-          onPaymentComplete={handlePaymentComplete}
-        />
-      )}
     </main>
   );
 }

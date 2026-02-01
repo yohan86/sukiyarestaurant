@@ -10,7 +10,7 @@ import AddonSelector from "@/components/AddonSelector";
 function CartContent() {
     const router = useRouter();
     const searchParams = useSearchParams();
-    const tableFromQr = searchParams.get("table");
+    const tableFromQr = searchParams.get("table") || searchParams.get("tableNumber");
     const { items, totalCartAmount, dispatch } = useCart();
     const [selectedItemForAddons, setSelectedItemForAddons] = useState<string | null>(null);
 
@@ -82,8 +82,8 @@ function CartContent() {
                                                     −
                                                 </button>
                                                 <span className="text-lg font-semibold min-w-[30px] text-center">
-                          {item.quantity}
-                        </span>
+                                                    {item.quantity}
+                                                </span>
                                                 <button
                                                     onClick={() => {
                                                         dispatch({
@@ -96,8 +96,8 @@ function CartContent() {
                                                     +
                                                 </button>
                                                 <span className="ml-auto text-lg font-bold">
-                          ¥{itemTotal.toLocaleString()}
-                        </span>
+                                                    ¥{itemTotal.toLocaleString()}
+                                                </span>
                                             </div>
 
                                             {/* Addons Display */}
@@ -106,9 +106,9 @@ function CartContent() {
                                                     <p className="text-sm font-semibold text-gray-700 mb-1">Addons:</p>
                                                     {item.addons.map((addon) => (
                                                         <div key={addon.id} className="flex justify-between text-sm mb-1">
-                              <span className="text-gray-600">
-                                + {addon.title} (×{addon.quantity})
-                              </span>
+                                                            <span className="text-gray-600">
+                                                                + {addon.title} (×{addon.quantity})
+                                                            </span>
                                                             <span className="font-medium">¥{addon.totalAmount.toLocaleString()}</span>
                                                         </div>
                                                     ))}
@@ -156,9 +156,9 @@ function CartContent() {
                                     const itemTotal = item.totalAmount + (item.addons?.reduce((sum, addon) => sum + addon.totalAmount, 0) || 0);
                                     return (
                                         <div key={item.id} className="flex justify-between text-sm">
-                      <span className="text-gray-600">
-                        {item.title} × {item.quantity}
-                      </span>
+                                            <span className="text-gray-600">
+                                                {item.title} × {item.quantity}
+                                            </span>
                                             <span className="font-medium">¥{itemTotal.toLocaleString()}</span>
                                         </div>
                                     );
@@ -169,8 +169,8 @@ function CartContent() {
                                 <div className="flex justify-between items-center mb-4">
                                     <span className="text-lg font-bold">Total:</span>
                                     <span className="text-2xl font-bold text-primary">
-                    ¥{totalCartAmount.toLocaleString()}
-                  </span>
+                                        ¥{totalCartAmount.toLocaleString()}
+                                    </span>
                                 </div>
 
                                 <Button

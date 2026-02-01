@@ -57,7 +57,7 @@ function TableNumberCapture() {
   const searchParams = useSearchParams();
 
   useEffect(() => {
-    const tableNumber = searchParams.get("tableNumber");
+    const tableNumber = searchParams.get("tableNumber") || searchParams.get("table");
     if (tableNumber) {
       localStorage.setItem("active_table_number", tableNumber);
     }

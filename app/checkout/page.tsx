@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useState, useEffect, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useCart } from "@/context/CartContext";
 import { useAuth } from "@/lib/auth-context";
 import Link from "next/link";
@@ -10,8 +10,9 @@ import PayPayCheckoutModal from "@/components/PayPayCheckoutModal";
 type PaymentMethod = "manual" | "paypay";
 type PayPayTiming = "now" | "after";
 
-export default function CheckoutPage() {
+function CheckoutPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { items, totalCartAmount, dispatch } = useCart();
   const { user, isAuthenticated } = useAuth();
   const [tableNumber, setTableNumber] = useState("");
@@ -50,18 +51,18 @@ export default function CheckoutPage() {
     }
     // Priority 3: Set table number from authenticated user if available
     else if (isAuthenticated && user) {
-    // Set table number from user email/login if available
-    if (isAuthenticated && user) {
       // Try to get table number from user data
       if (user.userId?.startsWith("table_")) {
         // Extract table number from userId (format: table_5)
         const tableId = user.userId.replace("table_", "");
         setTableNumber(tableId);
       }
-      // Note: tableId property doesn't exist on AuthUser type
-      // Table number can be extracted from userId or entered manually
+    } else {
+      // If not authenticated and no table from URL, redirect to login
+      const loginUrl = `/login?redirect=/checkout`;
+      router.push(loginUrl);
     }
-  }, [items, router, isAuthenticated, user]);
+  }, [items, router, isAuthenticated, user, searchParams]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -200,7 +201,7 @@ export default function CheckoutPage() {
 
       const apiPaymentMethod = timing === "now" ? "paypay_now" : "paypay_after";
       const apiBaseUrl = process.env.NEXT_PUBLIC_API_URL || "https://sukiyaapi.vercel.app";
-      
+
       const response = await fetch(`${apiBaseUrl}/api/orders`, {
         method: "POST",
         headers: {
@@ -343,11 +344,10 @@ export default function CheckoutPage() {
                     </h2>
                     <div className="flex flex-row gap-4">
                       {/* Manual Payment Option */}
-                      <label className={`flex-1 flex flex-col items-center justify-center p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                        paymentMethod === "manual" 
-                          ? "border-orange-500 bg-orange-50 shadow-md" 
+                      <label className={`flex-1 flex flex-col items-center justify-center p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${paymentMethod === "manual"
+                          ? "border-orange-500 bg-orange-50 shadow-md"
                           : "border-orange-200 bg-white hover:border-orange-300 hover:bg-orange-50/50"
-                      }`}>
+                        }`}>
                         <input
                           type="radio"
                           name="paymentMethod"
@@ -366,11 +366,10 @@ export default function CheckoutPage() {
                       </label>
 
                       {/* PayPay Payment Option */}
-                      <label className={`flex-1 flex flex-col items-center justify-center p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${
-                        paymentMethod === "paypay" 
-                          ? "border-orange-500 bg-orange-50 shadow-md" 
+                      <label className={`flex-1 flex flex-col items-center justify-center p-5 border-2 rounded-xl cursor-pointer transition-all duration-200 ${paymentMethod === "paypay"
+                          ? "border-orange-500 bg-orange-50 shadow-md"
                           : "border-orange-200 bg-white hover:border-orange-300 hover:bg-orange-50/50"
-                      }`}>
+                        }`}>
                         <input
                           type="radio"
                           name="paymentMethod"
@@ -406,7 +405,7 @@ export default function CheckoutPage() {
                       </svg>
                       Order Summary
                     </h2>
-                    
+
                     <div className="space-y-3 mb-5 max-h-64 overflow-y-auto pr-2">
                       {items.map((item) => {
                         const itemTotal = item.totalAmount + (item.addons?.reduce((sum, a) => sum + a.totalAmount, 0) || 0);
@@ -499,5 +498,16 @@ export default function CheckoutPage() {
         />
       )}
     </>
+  );
+}
+export default function CheckoutPageWrapper() {
+  return (
+    <Suspense fallback={
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="w-12 h-12 border-4 border-orange-500 border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    }>
+      <CheckoutPage />
+    </Suspense>
   );
 }

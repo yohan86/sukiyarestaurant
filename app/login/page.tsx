@@ -1,14 +1,15 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 import { getLineLoginUrl } from "@/lib/admin-api";
 import { setAuthToken } from "@/lib/admin-api";
 import { useAuth } from "@/lib/auth-context";
 import { useLiff } from "@/lib/liff-provider";
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const { isAuthenticated, login } = useAuth();
   const { isInLiff, isLiffLoading, liffError } = useLiff();
   const [isLoading, setIsLoading] = useState(false);
@@ -17,9 +18,17 @@ export default function LoginPage() {
   useEffect(() => {
     // Redirect if already authenticated
     if (isAuthenticated) {
-      router.push("/");
+      const redirect = searchParams.get("redirect");
+      const table = searchParams.get("table") || searchParams.get("tableNumber");
+
+      if (redirect) {
+        const redirectUrl = table ? `${redirect}${redirect.includes('?') ? '&' : '?'}table=${table}` : redirect;
+        router.push(redirectUrl);
+      } else {
+        router.push("/");
+      }
     }
-  }, [isAuthenticated, router]);
+  }, [isAuthenticated, router, searchParams]);
 
   // Show LIFF error if present
   useEffect(() => {
@@ -34,10 +43,14 @@ export default function LoginPage() {
       setError(null);
 
       const { loginUrl, state } = await getLineLoginUrl();
+      const redirect = searchParams.get("redirect");
+      const table = searchParams.get("table") || searchParams.get("tableNumber");
 
       // Store state in sessionStorage for verification
       if (typeof window !== "undefined") {
         sessionStorage.setItem("line_login_state", state);
+        if (redirect) sessionStorage.setItem("login_redirect", redirect);
+        if (table) sessionStorage.setItem("login_table", table);
       }
 
       // Redirect to LINE login
@@ -146,6 +159,18 @@ export default function LoginPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={
+      <div className="flex min-h-screen items-center justify-center">
+        <p>Loading...</p>
+      </div>
+    }>
+      <LoginContent />
+    </Suspense>
   );
 }
 

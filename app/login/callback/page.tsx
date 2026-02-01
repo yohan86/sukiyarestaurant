@@ -16,13 +16,26 @@ function CallbackContent() {
       try {
         // Store token
         setAuthToken(token);
-        
+
         // Verify token to ensure it's valid
         verifyToken(token)
           .then((result) => {
             if (result.valid) {
-              // Redirect to home - AuthProvider will pick up the token
-              router.push("/");
+              // Check for redirect and table in sessionStorage (set by login page)
+              const redirect = sessionStorage.getItem("login_redirect");
+              const table = sessionStorage.getItem("login_table");
+
+              // Clear session storage
+              sessionStorage.removeItem("login_redirect");
+              sessionStorage.removeItem("login_table");
+
+              // Build redirect URL
+              if (redirect) {
+                const redirectUrl = table ? `${redirect}${redirect.includes('?') ? '&' : '?'}table=${table}` : redirect;
+                router.push(redirectUrl);
+              } else {
+                router.push("/");
+              }
             } else {
               router.push("/login?error=invalid_token");
             }

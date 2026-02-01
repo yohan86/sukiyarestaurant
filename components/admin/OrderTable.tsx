@@ -1,11 +1,13 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations } from "next-intl";
 import { getOrders, type Order } from "@/lib/admin-api";
 import FilterBar from "./FilterBar";
 import OrderRow from "./OrderRow";
 
 export default function OrderTable() {
+  const t = useTranslations('Admin');
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
@@ -41,7 +43,7 @@ export default function OrderTable() {
             <div className="w-16 h-16 border-4 border-[#31a354]/20 rounded-full"></div>
             <div className="w-16 h-16 border-4 border-[#31a354] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
           </div>
-          <p className="text-gray-600 font-medium text-lg">Loading orders...</p>
+          <p className="text-gray-600 font-medium text-lg">{t('loadingOrders')}</p>
         </div>
       </div>
     );
@@ -56,8 +58,8 @@ export default function OrderTable() {
             <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-4xl">
               📭
             </div>
-            <p className="text-xl font-bold text-gray-900 mb-2">No orders found</p>
-            <p className="text-gray-500">Try adjusting your filters</p>
+            <p className="text-xl font-bold text-gray-900 mb-2">{t('noRecentOrders')}</p>
+            <p className="text-gray-500">{t('ordersWillAppear')}</p>
           </div>
         </div>
       ) : (
@@ -67,25 +69,25 @@ export default function OrderTable() {
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Order ID
+                    {t('orderId')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Ordered Time
+                    {t('time')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Table
+                    {t('table')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Items Summary
+                    {t('orderItems')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Total
+                    {t('total')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Status
+                    {t('status')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Actions / Payment
+                    {t('paymentStatus')}
                   </th>
                 </tr>
               </thead>

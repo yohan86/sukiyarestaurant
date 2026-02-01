@@ -1,6 +1,5 @@
-"use client";
-
 import { useState } from "react";
+import { useTranslations } from "next-intl";
 import { updateOrderStatus, type Order } from "@/lib/admin-api";
 
 type OrderStatus = Order["status"];
@@ -16,6 +15,7 @@ export default function StatusSelect({
   currentStatus,
   onStatusChange,
 }: StatusSelectProps) {
+  const t = useTranslations('Admin.stats');
   const [status, setStatus] = useState<OrderStatus>(currentStatus);
   const [isUpdating, setIsUpdating] = useState(false);
 
@@ -70,14 +70,13 @@ export default function StatusSelect({
       value={status}
       onChange={handleChange}
       disabled={isUpdating}
-      className={`text-sm font-bold rounded-xl border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} py-2 px-4 pr-8 focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[44px] touch-manipulation shadow-sm hover:shadow-md ${
-        isUpdating ? "opacity-50 cursor-not-allowed" : "cursor-pointer active:scale-95"
-      }`}
+      className={`text-sm font-bold rounded-xl border-2 ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} py-2 px-4 pr-8 focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[44px] touch-manipulation shadow-sm hover:shadow-md ${isUpdating ? "opacity-50 cursor-not-allowed" : "cursor-pointer active:scale-95"
+        }`}
     >
-      <option value="Received">Received</option>
-      <option value="Preparing">Preparing</option>
-      <option value="Ready">Ready</option>
-      <option value="Completed">Completed</option>
+      <option value="Received">{t('pending')}</option>
+      <option value="Preparing">{t('preparing')}</option>
+      <option value="Ready">{t('ready')}</option>
+      <option value="Completed">{t('completed')}</option>
     </select>
   );
 }

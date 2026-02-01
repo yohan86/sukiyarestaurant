@@ -1,3 +1,5 @@
+import { useTranslations } from "next-intl";
+
 type OrderStatus = "Received" | "Preparing" | "Ready" | "Completed";
 
 interface StatusBadgeProps {
@@ -6,6 +8,8 @@ interface StatusBadgeProps {
 }
 
 export default function StatusBadge({ status, className = "" }: StatusBadgeProps) {
+  const t = useTranslations('Admin.stats');
+
   const statusStyles: Record<OrderStatus, { bg: string; text: string; border: string }> = {
     Received: {
       bg: "bg-[#E3F2FD]",
@@ -35,11 +39,21 @@ export default function StatusBadge({ status, className = "" }: StatusBadgeProps
     border: "border-gray-300",
   };
 
+  const getStatusLabel = (status: OrderStatus) => {
+    switch (status) {
+      case "Received": return t('pending');
+      case "Preparing": return t('preparing');
+      case "Ready": return t('ready');
+      case "Completed": return t('completed');
+      default: return status;
+    }
+  };
+
   return (
     <span
       className={`inline-flex px-3 py-1.5 text-xs font-bold rounded-full border-2 shadow-sm ${statusStyle.bg} ${statusStyle.text} ${statusStyle.border} ${className}`}
     >
-      {status}
+      {getStatusLabel(status)}
     </span>
   );
 }

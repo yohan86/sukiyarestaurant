@@ -1,9 +1,15 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import DatePicker from "react-datepicker";
+import { useTranslations, useLocale } from "next-intl";
+import DatePicker, { registerLocale } from "react-datepicker";
+import { ja } from "date-fns/locale/ja";
+import { enUS } from "date-fns/locale/en-US";
 import "react-datepicker/dist/react-datepicker.css";
 import { type Order } from "@/lib/admin-api";
+
+registerLocale("ja", ja);
+registerLocale("en", enUS);
 
 type OrderStatus = Order["status"];
 type SortOrder = "newest" | "oldest";
@@ -15,6 +21,8 @@ interface FilterBarProps {
 }
 
 export default function FilterBar({ orders, onFilterChange, onSortChange }: FilterBarProps) {
+  const t = useTranslations('Admin');
+  const locale = useLocale();
   const [statusFilter, setStatusFilter] = useState<OrderStatus | "all">("all");
   const [tableFilter, setTableFilter] = useState<string>("all");
   const [sortOrder, setSortOrder] = useState<SortOrder>("newest");
@@ -75,19 +83,29 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
 
   const hasActiveFilters = statusFilter !== "all" || tableFilter !== "all" || sortOrder !== "newest" || dateFilter !== null;
 
+  const getStatusLabel = (status: OrderStatus) => {
+    switch (status) {
+      case "Received": return t('stats.pending');
+      case "Preparing": return t('stats.preparing');
+      case "Ready": return t('stats.ready');
+      case "Completed": return t('stats.completed');
+      default: return status;
+    }
+  };
+
   return (
     <div className="bg-white/80 backdrop-blur-md rounded-3xl shadow-xl border border-white/50 p-6 md:p-7 mb-6 hover:shadow-2xl transition-all duration-300">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-lg md:text-xl font-bold text-gray-900 flex items-center gap-3">
           <span className="w-1.5 h-6 bg-gradient-to-b from-[#31a354] to-[#31a354] rounded-full"></span>
-          Filters & Sort
+          {t('filtersAndSort')}
         </h3>
         {hasActiveFilters && (
           <button
             onClick={handleClearFilters}
             className="px-4 py-2 text-sm font-bold text-gray-600 bg-gray-100 hover:bg-gray-200 rounded-xl transition-all duration-200 active:scale-95 touch-manipulation min-h-[44px]"
           >
-            Clear All
+            {t('clearAll')}
           </button>
         )}
       </div>
@@ -96,35 +114,35 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
         {/* Filter by Status */}
         <div className="flex-1">
           <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-            Status
+            {t('status')}
           </label>
           <select
             value={statusFilter}
             onChange={(e) => setStatusFilter(e.target.value as OrderStatus | "all")}
             className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
           >
-            <option value="all">All Statuses</option>
-            <option value="Received">Received</option>
-            <option value="Preparing">Preparing</option>
-            <option value="Ready">Ready</option>
-            <option value="Completed">Completed</option>
+            <option value="all">{t('allStatuses')}</option>
+            <option value="Received">{t('stats.pending')}</option>
+            <option value="Preparing">{t('stats.preparing')}</option>
+            <option value="Ready">{t('stats.ready')}</option>
+            <option value="Completed">{t('stats.completed')}</option>
           </select>
         </div>
 
         {/* Filter by Table */}
         <div className="flex-1">
           <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-            Table
+            {t('table')}
           </label>
           <select
             value={tableFilter}
             onChange={(e) => setTableFilter(e.target.value)}
             className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
           >
-            <option value="all">All Tables</option>
+            <option value="all">{t('allTables')}</option>
             {uniqueTables.map((table) => (
               <option key={table} value={table}>
-                {table}
+                {t('table')} {table}
               </option>
             ))}
           </select>
@@ -133,14 +151,15 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
         {/* Filter by Date */}
         <div className="flex-1">
           <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-            Order Date
+            {t('orderDate')}
           </label>
           <DatePicker
             selected={dateFilter}
             onChange={(date) => setDateFilter(date)}
-            placeholderText="Select date..."
-            dateFormat="MMM dd, yyyy"
+            placeholderText={t('selectDate')}
+            dateFormat={locale === 'ja' ? "yyyy/MM/dd" : "MMM dd, yyyy"}
             isClearable
+            locale={locale === 'ja' ? "ja" : "en"}
             className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
             wrapperClassName="w-full"
           />
@@ -149,15 +168,15 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
         {/* Order by Time */}
         <div className="flex-1">
           <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-            Order By
+            {t('orderBy')}
           </label>
           <select
             value={sortOrder}
             onChange={(e) => handleSortChange(e.target.value as SortOrder)}
             className="w-full rounded-xl border-2 border-gray-200 bg-gradient-to-br from-blue-50 to-purple-50 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-bold text-gray-900 shadow-sm focus:border-[#31a354] focus:ring-2 focus:ring-[#31a354]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-[#31a354]/50"
           >
-            <option value="newest">Newest First</option>
-            <option value="oldest">Oldest First</option>
+            <option value="newest">{t('newestFirst')}</option>
+            <option value="oldest">{t('oldestFirst')}</option>
           </select>
         </div>
       </div>
@@ -166,25 +185,25 @@ export default function FilterBar({ orders, onFilterChange, onSortChange }: Filt
       {hasActiveFilters && (
         <div className="mt-5 pt-5 border-t border-gray-200">
           <div className="flex flex-wrap items-center gap-2">
-            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">Active Filters:</span>
+            <span className="text-xs font-bold text-gray-500 uppercase tracking-wide">{t('activeFilters')}:</span>
             {statusFilter !== "all" && (
               <span className="px-3 py-1.5 bg-blue-100 text-blue-700 rounded-full text-sm font-bold border border-blue-200">
-                Status: {statusFilter}
+                {t('status')}: {getStatusLabel(statusFilter)}
               </span>
             )}
             {tableFilter !== "all" && (
               <span className="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-full text-sm font-bold border border-purple-200">
-                Table: {tableFilter}
+                {t('table')}: {tableFilter}
               </span>
             )}
             {sortOrder === "oldest" && (
               <span className="px-3 py-1.5 bg-green-100 text-green-700 rounded-full text-sm font-bold border border-green-200">
-                Sort: Oldest First
+                {t('orderBy')}: {t('oldestFirst')}
               </span>
             )}
             {dateFilter && (
               <span className="px-3 py-1.5 bg-orange-100 text-orange-700 rounded-full text-sm font-bold border border-orange-200">
-                Date: {dateFilter.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" })}
+                {t('orderDate')}: {dateFilter.toLocaleDateString(locale === 'ja' ? 'ja-JP' : "en-US", { month: "short", day: "numeric", year: "numeric" })}
               </span>
             )}
           </div>

@@ -1,12 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { useTranslations } from "next-intl";
+import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect, useState } from "react";
 import { getOrders } from "@/lib/admin-api";
 
 export default function AdminNavigation() {
+  const t = useTranslations('Admin');
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
@@ -18,19 +19,19 @@ export default function AdminNavigation() {
         const orders = await getOrders();
         const oneDayAgo = new Date();
         oneDayAgo.setHours(oneDayAgo.getHours() - 24);
-        
+
         // Count recent orders (last 24 hours) as unread notifications
         const recentCount = orders.filter(order => {
           const orderDate = new Date(order.createdAt);
           return orderDate >= oneDayAgo;
         }).length;
-        
+
         setUnreadCount(recentCount);
       } catch (error) {
         console.error("Failed to fetch unread count:", error);
       }
     }
-    
+
     if (user) {
       fetchUnreadCount();
       // Refresh count every 30 seconds
@@ -56,21 +57,21 @@ export default function AdminNavigation() {
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-3 md:space-x-4 flex-1">
               <NavLink href="/admin" pathname={pathname}>
-                Dashboard
+                {t('dashboard')}
               </NavLink>
               <NavLink href="/admin/orders" pathname={pathname}>
-                Orders
+                {t('orders')}
               </NavLink>
               <NavLink href="/admin/menu" pathname={pathname}>
-                Menu
+                {t('menu')}
               </NavLink>
               {(user?.role === "admin" || user?.role === "manager") && (
                 <NavLink href="/admin/users" pathname={pathname}>
-                  Users
+                  {t('users')}
                 </NavLink>
               )}
               <NavLink href="/admin/profile" pathname={pathname}>
-                Profile
+                {t('profile')}
               </NavLink>
             </div>
             <div className="flex items-center gap-3">
@@ -80,7 +81,7 @@ export default function AdminNavigation() {
                   <Link
                     href="/admin/notifications"
                     className="relative p-2 text-gray-600 hover:text-[#06C755] transition-colors duration-200 rounded-lg hover:bg-white/50 active:scale-95 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center"
-                    aria-label="Notifications"
+                    aria-label={t('notifications')}
                   >
                     <svg
                       className="w-6 h-6"
@@ -100,7 +101,7 @@ export default function AdminNavigation() {
                     {unreadCount > 0 && (
                       <span className="absolute -top-1 -right-1 h-5 w-5 bg-red-500 rounded-full flex items-center justify-center text-xs font-bold text-white border-2 border-white shadow-lg">
                         {unreadCount > 9 ? "9+" : unreadCount}
-                        <span className="sr-only">{unreadCount} new notifications</span>
+                        <span className="sr-only">{unreadCount} {t('unreadNotifications')}</span>
                       </span>
                     )}
                   </Link>
@@ -123,7 +124,7 @@ export default function AdminNavigation() {
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 touch-manipulation min-h-[44px] flex items-center gap-2"
               >
                 <span>🚪</span>
-                <span className="hidden sm:inline">Logout</span>
+                <span className="hidden sm:inline">{t('logout')}</span>
               </button>
             </div>
           </div>
@@ -133,24 +134,24 @@ export default function AdminNavigation() {
       <div className="sm:hidden border-t border-white/50 bg-gradient-to-b from-blue-50 to-purple-50 backdrop-blur-sm">
         <div className="px-3 pt-3 pb-4 space-y-2">
           <MobileNavLink href="/admin" pathname={pathname}>
-            Dashboard
+            {t('dashboard')}
           </MobileNavLink>
           <MobileNavLink href="/admin/orders" pathname={pathname}>
-            Orders
+            {t('orders')}
           </MobileNavLink>
           <MobileNavLink href="/admin/menu" pathname={pathname}>
-            Menu
+            {t('menu')}
           </MobileNavLink>
           {(user?.role === "admin" || user?.role === "manager") && (
             <MobileNavLink href="/admin/users" pathname={pathname}>
-              Users
+              {t('users')}
             </MobileNavLink>
           )}
           <MobileNavLink href="/admin/profile" pathname={pathname}>
-            Profile
+            {t('profile')}
           </MobileNavLink>
           <MobileNavLink href="/admin/notifications" pathname={pathname}>
-            🔔 Notifications
+            🔔 {t('notifications')}
           </MobileNavLink>
           {user && (
             <Link
@@ -171,7 +172,7 @@ export default function AdminNavigation() {
             className="w-full px-5 py-4 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 touch-manipulation min-h-[56px] flex items-center justify-center gap-2 mt-2"
           >
             <span>🚪</span>
-            <span>Logout</span>
+            <span>{t('logout')}</span>
           </button>
         </div>
       </div>
@@ -194,11 +195,10 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center px-5 md:px-6 py-3 md:py-3.5 rounded-xl text-base md:text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[48px] md:min-h-[52px] ${
-        isActive
+      className={`inline-flex items-center px-5 md:px-6 py-3 md:py-3.5 rounded-xl text-base md:text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[48px] md:min-h-[52px] ${isActive
           ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
           : "text-gray-700 active:text-gray-900 active:bg-white/70 backdrop-blur-sm border border-white/50"
-      }`}
+        }`}
     >
       {children}
     </Link>
@@ -220,11 +220,10 @@ function MobileNavLink({
   return (
     <Link
       href={href}
-      className={`block px-5 py-4 rounded-xl text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[56px] flex items-center ${
-        isActive
+      className={`block px-5 py-4 rounded-xl text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[56px] flex items-center ${isActive
           ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
           : "text-gray-700 active:bg-white active:text-gray-900"
-      }`}
+        }`}
     >
       {children}
     </Link>

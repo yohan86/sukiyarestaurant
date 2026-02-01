@@ -33,7 +33,11 @@ export function middleware(request: NextRequest) {
 }
 
 export const config = {
-  // Match only internationalized pathnames
-  matcher: ['/', '/(ja|en)/:path*', '/api/:path*']
+  // Match all pathnames except for
+  // - /api (handled separately)
+  // - /_next
+  // - /_vercel
+  // - static files (e.g. /favicon.ico)
+  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
 };
 

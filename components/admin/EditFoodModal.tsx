@@ -1,6 +1,6 @@
-"use client";
-
 import { useState, useEffect, useMemo } from "react";
+import Image from "next/image";
+import { useTranslations, useLocale } from "next-intl";
 import { updateMenuItem, type MenuItem } from "@/lib/admin-api";
 
 interface EditFoodModalProps {
@@ -18,6 +18,8 @@ export default function EditFoodModal({
   onSuccess,
   menuItems = [],
 }: EditFoodModalProps) {
+  const t = useTranslations('Admin');
+  const locale = useLocale();
   const [formData, setFormData] = useState({
     nameEn: "",
     nameJp: "",
@@ -78,19 +80,19 @@ export default function EditFoodModal({
     try {
       // Validate form
       if (!formData.nameEn.trim() || !formData.nameJp.trim()) {
-        setError("Name (EN) and Name (JP) are required");
+        setError(t('errorNameEnJpRequired'));
         setIsSubmitting(false);
         return;
       }
 
       if (!formData.price || parseFloat(formData.price) <= 0) {
-        setError("Price must be greater than 0");
+        setError(t('errorPricePositive'));
         setIsSubmitting(false);
         return;
       }
 
       if (!formData.imageUrl.trim()) {
-        setError("Image URL is required");
+        setError(t('errorImageUrlRequired'));
         setIsSubmitting(false);
         return;
       }
@@ -149,17 +151,17 @@ export default function EditFoodModal({
         <div className="sticky top-0 bg-gradient-to-r from-[#06C755] via-[#00C300] to-[#06C755] px-6 md:px-8 py-6 md:py-7 flex items-center justify-between rounded-t-3xl shadow-lg z-10 min-h-[80px]">
           <div className="flex-1">
             <h2 className="text-2xl md:text-3xl font-bold text-white drop-shadow-lg">
-              Edit Food Item
+              {t('editFoodItem')}
             </h2>
             <p className="text-base md:text-lg text-white/95 mt-2 font-medium">
-              Update menu item details
+              {t('updateMenuItem')}
             </p>
           </div>
           <button
             onClick={handleClose}
             disabled={isSubmitting}
             className="text-white/90 active:text-white transition-all duration-200 p-3 md:p-4 active:bg-white/30 rounded-full backdrop-blur-sm min-w-[48px] min-h-[48px] md:min-w-[56px] md:min-h-[56px] flex items-center justify-center touch-manipulation disabled:opacity-50"
-            aria-label="Close modal"
+            aria-label={t('close')}
           >
             <svg
               className="w-7 h-7 md:w-8 md:h-8"
@@ -189,7 +191,7 @@ export default function EditFoodModal({
             {/* Name (EN) */}
             <div>
               <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                Name (English) <span className="text-red-500">*</span>
+                {t('nameEn')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -206,7 +208,7 @@ export default function EditFoodModal({
             {/* Name (JP) */}
             <div>
               <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                Name (Japanese) <span className="text-red-500">*</span>
+                {t('nameJp')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="text"
@@ -225,7 +227,7 @@ export default function EditFoodModal({
               {/* Price */}
               <div>
                 <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                  Price (¥) <span className="text-red-500">*</span>
+                  {t('priceYen')} <span className="text-red-500">*</span>
                 </label>
                 <input
                   type="number"
@@ -244,8 +246,8 @@ export default function EditFoodModal({
               {/* Category */}
               <div>
                 <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                  Category <span className="text-red-500">*</span>
-                  <span className="text-gray-400 text-xs font-normal ml-2">(Select existing or type new)</span>
+                  {t('category')} <span className="text-red-500">*</span>
+                  <span className="text-gray-400 text-xs font-normal ml-2">({t('selectCategory')})</span>
                 </label>
                 <input
                   type="text"
@@ -256,7 +258,7 @@ export default function EditFoodModal({
                   }
                   required
                   className="w-full rounded-xl border-2 border-gray-200 bg-white/80 backdrop-blur-sm px-4 py-3 md:py-3.5 text-base font-medium text-gray-900 shadow-sm focus:border-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:outline-none transition-all duration-200 min-h-[48px] touch-manipulation hover:border-gray-300"
-                  placeholder="Type or select a category"
+                  placeholder={t('typeOrSelectCategory')}
                   autoComplete="off"
                 />
                 <datalist id="category-list-edit">
@@ -266,7 +268,7 @@ export default function EditFoodModal({
                 </datalist>
                 {existingCategories.length > 0 && (
                   <div className="mt-2 flex flex-wrap gap-2">
-                    <span className="text-xs text-gray-500 font-medium">Existing categories:</span>
+                    <span className="text-xs text-gray-500 font-medium">{t('existingCategories')}</span>
                     {existingCategories.slice(0, 5).map((category) => (
                       <button
                         key={category}
@@ -278,7 +280,7 @@ export default function EditFoodModal({
                       </button>
                     ))}
                     {existingCategories.length > 5 && (
-                      <span className="text-xs text-gray-400">+{existingCategories.length - 5} more</span>
+                      <span className="text-xs text-gray-400">+{existingCategories.length - 5} {t('more')}</span>
                     )}
                   </div>
                 )}
@@ -288,7 +290,7 @@ export default function EditFoodModal({
             {/* Subcategory */}
             <div>
               <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                Subcategory <span className="text-gray-400 text-xs">(Optional)</span>
+                {t('subcategory')} <span className="text-gray-400 text-xs">({t('optional')})</span>
               </label>
               <input
                 type="text"
@@ -304,7 +306,7 @@ export default function EditFoodModal({
             {/* Image URL */}
             <div>
               <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                Image URL <span className="text-red-500">*</span>
+                {t('imageUrl')} <span className="text-red-500">*</span>
               </label>
               <input
                 type="url"
@@ -322,17 +324,15 @@ export default function EditFoodModal({
             {formData.imageUrl && (
               <div>
                 <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                  Preview
+                  {t('preview')}
                 </label>
                 <div className="w-32 h-32 relative rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-200">
-                  <img
+                  <Image
                     src={formData.imageUrl}
                     alt="Preview"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src =
-                        "https://via.placeholder.com/150";
-                    }}
+                    fill
+                    unoptimized
+                    className="object-cover"
                   />
                 </div>
               </div>
@@ -350,7 +350,7 @@ export default function EditFoodModal({
                   className="w-6 h-6 rounded border-2 border-gray-300 text-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:ring-offset-0 cursor-pointer touch-manipulation"
                 />
                 <span className="text-base font-bold text-gray-900">
-                  Active (visible in menu)
+                  {t('activeVisible')}
                 </span>
               </label>
               <label className="flex items-center gap-3 cursor-pointer">
@@ -363,7 +363,7 @@ export default function EditFoodModal({
                   className="w-6 h-6 rounded border-2 border-gray-300 text-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:ring-offset-0 cursor-pointer touch-manipulation"
                 />
                 <span className="text-base font-bold text-gray-900">
-                  Available as Addon
+                  {t('availableAsAddon')}
                 </span>
               </label>
             </div>
@@ -372,11 +372,11 @@ export default function EditFoodModal({
             {!formData.isAddon && addonItems.length > 0 && (
               <div>
                 <label className="block text-sm font-bold text-gray-600 uppercase tracking-wide mb-2">
-                  Allowed Addons <span className="text-gray-400 text-xs">(Select which addons can be added to this item)</span>
+                  {t('allowedAddons')} <span className="text-gray-400 text-xs">({t('selectAddons')})</span>
                 </label>
                 <div className="max-h-48 overflow-y-auto border-2 border-gray-200 rounded-xl p-4 bg-white/80">
                   {addonItems.length === 0 ? (
-                    <p className="text-gray-500 text-sm">No addon items available. Create addon items first.</p>
+                    <p className="text-gray-500 text-sm">{t('noAddonsAvailable')} {t('createAddonsFirst')}</p>
                   ) : (
                     <div className="space-y-2">
                       {addonItems.map((addon) => (
@@ -405,7 +405,7 @@ export default function EditFoodModal({
                             className="w-5 h-5 rounded border-2 border-gray-300 text-[#06C755] focus:ring-2 focus:ring-[#06C755]/20 focus:ring-offset-0 cursor-pointer"
                           />
                           <span className="text-sm font-medium text-gray-900 flex-1">
-                            {addon.nameEn} ({addon.nameJp})
+                            {locale === 'ja' ? addon.nameJp : addon.nameEn} ({locale === 'ja' ? addon.nameEn : addon.nameJp})
                           </span>
                           <span className="text-sm text-gray-600">¥{addon.price.toLocaleString()}</span>
                         </label>
@@ -415,7 +415,7 @@ export default function EditFoodModal({
                 </div>
                 {formData.allowedAddons.length > 0 && (
                   <p className="text-xs text-gray-500 mt-2">
-                    {formData.allowedAddons.length} addon{formData.allowedAddons.length !== 1 ? 's' : ''} selected
+                    {t('addonsSelected', { count: formData.allowedAddons.length })}
                   </p>
                 )}
               </div>
@@ -429,7 +429,7 @@ export default function EditFoodModal({
                 disabled={isSubmitting}
                 className="px-6 py-3 bg-gray-200 text-gray-700 rounded-xl font-bold hover:bg-gray-300 transition-all duration-200 active:scale-95 touch-manipulation min-h-[48px] disabled:opacity-50"
               >
-                Cancel
+                {t('cancel')}
               </button>
               <button
                 type="submit"
@@ -439,12 +439,12 @@ export default function EditFoodModal({
                 {isSubmitting ? (
                   <>
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                    <span>Updating...</span>
+                    <span>{t('saving')}</span>
                   </>
                 ) : (
                   <>
                     <span>✓</span>
-                    <span>Update Food Item</span>
+                    <span>{t('editFoodItem')}</span>
                   </>
                 )}
               </button>

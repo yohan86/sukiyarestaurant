@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { getMenuItems, updateMenuItem, deleteMenuItem, type MenuItem } from "@/lib/admin-api";
 import Image from "next/image";
 import MenuFilterBar from "./MenuFilterBar";
@@ -8,6 +9,8 @@ import AddFoodModal from "./AddFoodModal";
 import EditFoodModal from "./EditFoodModal";
 
 export default function MenuTable() {
+  const t = useTranslations('Admin');
+  const locale = useLocale();
   const [allMenuItems, setAllMenuItems] = useState<MenuItem[]>([]);
   const [menuItems, setMenuItems] = useState<MenuItem[]>([]);
   const [loading, setLoading] = useState(true);
@@ -56,7 +59,8 @@ export default function MenuTable() {
   };
 
   const handleDelete = async (item: MenuItem) => {
-    if (!confirm(`Are you sure you want to delete "${item.nameEn}"?`)) {
+    const itemName = locale === 'ja' ? item.nameJp : item.nameEn;
+    if (!confirm(t('areYouSureDelete', { name: itemName }))) {
       return;
     }
     try {
@@ -84,7 +88,7 @@ export default function MenuTable() {
             <div className="w-16 h-16 border-4 border-[#31a354]/20 rounded-full"></div>
             <div className="w-16 h-16 border-4 border-[#31a354] border-t-transparent rounded-full animate-spin absolute top-0 left-0"></div>
           </div>
-          <p className="text-gray-600 font-medium text-lg">Loading menu items...</p>
+          <p className="text-gray-600 font-medium text-lg">{t('loadingMenu')}</p>
         </div>
       </div>
     );
@@ -104,13 +108,13 @@ export default function MenuTable() {
             <div className="w-24 h-24 mx-auto mb-6 bg-gradient-to-br from-gray-100 to-gray-200 rounded-full flex items-center justify-center text-4xl">
               🍽️
             </div>
-            <p className="text-xl font-bold text-gray-900 mb-2">No menu items found</p>
-            <p className="text-gray-500 mb-6">Try adjusting your filters or add a new food item</p>
+            <p className="text-xl font-bold text-gray-900 mb-2">{t('noMenuFound')}</p>
+            <p className="text-gray-500 mb-6">{t('tryAdjustingFilters')}</p>
             <button
               onClick={() => setIsAddModalOpen(true)}
               className="px-6 py-3 bg-gradient-to-r from-[#31a354] to-[#31a354] text-white rounded-xl font-bold shadow-lg hover:shadow-xl transition-all duration-200 active:scale-95 touch-manipulation"
             >
-              + Add New Food
+              {t('addNewFood')}
             </button>
           </div>
         </div>
@@ -121,22 +125,22 @@ export default function MenuTable() {
               <thead className="bg-gradient-to-r from-gray-50 to-gray-100">
                 <tr>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Image
+                    {t('image')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Name
+                    {t('name')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Price
+                    {t('price')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Category
+                    {t('category')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Status
+                    {t('status')}
                   </th>
                   <th className="px-6 py-4 text-left text-xs font-bold text-gray-600 uppercase tracking-wider">
-                    Actions
+                    {t('actions')}
                   </th>
                 </tr>
               </thead>
@@ -150,7 +154,7 @@ export default function MenuTable() {
                       <div className="h-20 w-20 md:h-24 md:w-24 relative rounded-xl overflow-hidden bg-gray-100 border-2 border-gray-200 shadow-sm group-hover:shadow-md transition-all duration-200">
                         <Image
                           src={item.imageUrl}
-                          alt={item.nameEn}
+                          alt={locale === 'ja' ? item.nameJp : item.nameEn}
                           fill
                           className="object-cover"
                         />
@@ -158,9 +162,11 @@ export default function MenuTable() {
                     </td>
                     <td className="px-6 py-4">
                       <div className="text-base font-bold text-gray-900 mb-1">
-                        {item.nameEn}
+                        {locale === 'ja' ? item.nameJp : item.nameEn}
                       </div>
-                      <div className="text-sm text-gray-600 font-medium">{item.nameJp}</div>
+                      <div className="text-sm text-gray-600 font-medium">
+                        {locale === 'ja' ? item.nameEn : item.nameJp}
+                      </div>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="text-lg font-bold text-gray-900">
@@ -175,13 +181,12 @@ export default function MenuTable() {
                     <td className="px-6 py-4 whitespace-nowrap">
                       <button
                         onClick={() => handleToggleStatus(item)}
-                        className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 shadow-sm transition-all duration-200 active:scale-95 touch-manipulation ${
-                          item.isActive
+                        className={`px-3 py-1.5 text-xs font-bold rounded-full border-2 shadow-sm transition-all duration-200 active:scale-95 touch-manipulation ${item.isActive
                             ? "bg-green-100 text-green-700 border-green-300 hover:bg-green-200"
                             : "bg-gray-100 text-gray-700 border-gray-300 hover:bg-gray-200"
-                        }`}
+                          }`}
                       >
-                        {item.isActive ? "Active" : "Inactive"}
+                        {item.isActive ? t('active') : t('inactive')}
                       </button>
                     </td>
                     <td className="px-6 py-4 whitespace-nowrap">
@@ -190,13 +195,13 @@ export default function MenuTable() {
                           onClick={() => setEditingItem(item)}
                           className="px-4 py-2 text-sm font-bold text-[#31a354] bg-green-50 hover:bg-green-100 rounded-xl transition-all duration-200 active:scale-95 touch-manipulation min-h-[40px] border border-green-200"
                         >
-                          Edit
+                          {t('edit')}
                         </button>
                         <button
                           onClick={() => handleDelete(item)}
                           className="px-4 py-2 text-sm font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-xl transition-all duration-200 active:scale-95 touch-manipulation min-h-[40px] border border-red-200"
                         >
-                          Delete
+                          {t('delete')}
                         </button>
                       </div>
                     </td>

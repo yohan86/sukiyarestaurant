@@ -1,6 +1,6 @@
 "use client";
 
-import { createContext, useContext, useState, useEffect, ReactNode } from "react";
+import { createContext, useContext, useState, useEffect, useRef, ReactNode } from "react";
 import { login, verifyToken, removeAuthToken, setAuthToken, getAuthToken, getUserById, liffLogin, type AuthUser, type LoginResponse } from "./admin-api";
 import { useLiff } from "./liff-provider";
 
@@ -20,6 +20,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<AuthUser | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const { isInLiff, liffProfile, isLiffLoading } = useLiff();
+  const isVerifying = useRef(false);
 
   useEffect(() => {
     // Wait for LIFF to finish loading
@@ -51,25 +52,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     // Otherwise, check if user is already logged in via token
     const token = getAuthToken();
-    if (token) {
+    if (token && !user) {
+      if (isVerifying.current) return;
+
+      isVerifying.current = true;
+      console.log("Verifying existing token...");
+
       verifyToken(token)
         .then((result) => {
-          if (result.valid) {
+          if (result.valid && result.user) {
+            console.log("Token verification successful");
             setUser(result.user);
           } else {
+            console.warn("Token verification failed or no user returned");
             removeAuthToken();
+            setUser(null);
           }
         })
-        .catch(() => {
+        .catch((err) => {
+          console.error("Token verification error:", err);
           removeAuthToken();
+          setUser(null);
         })
         .finally(() => {
+          isVerifying.current = false;
           setIsLoading(false);
         });
-    } else {
+    } else if (!token && !user) {
       setIsLoading(false);
     }
-  }, [isLiffLoading, isInLiff, liffProfile, user]);
+  }, [isLiffLoading, isInLiff, liffProfile]);
 
   const handleLogin = async (userId: string, password: string) => {
     const response: LoginResponse = await login(userId, password);

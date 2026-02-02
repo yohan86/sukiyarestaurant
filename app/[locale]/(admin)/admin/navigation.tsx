@@ -1,6 +1,6 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useTranslations, useLocale } from "next-intl";
 import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { useAuth } from "@/lib/auth-context";
 import { useEffect, useState } from "react";
@@ -8,10 +8,16 @@ import { getOrders } from "@/lib/admin-api";
 
 export default function AdminNavigation() {
   const t = useTranslations('Admin');
+  const locale = useLocale();
   const pathname = usePathname();
   const { user, logout } = useAuth();
   const router = useRouter();
   const [unreadCount, setUnreadCount] = useState(0);
+
+  const handleLanguageToggle = () => {
+    const nextLocale = locale === 'en' ? 'ja' : 'en';
+    router.replace(pathname, { locale: nextLocale });
+  };
 
   useEffect(() => {
     async function fetchUnreadCount() {
@@ -51,8 +57,8 @@ export default function AdminNavigation() {
         <div className="flex justify-between h-20 md:h-24">
           <div className="flex items-center w-full">
             <div className="flex-shrink-0 flex items-center">
-              <h1 className="text-2xl md:text-3xl font-bold bg-gradient-to-r from-[#06C755] via-[#00C300] to-[#06C755] bg-clip-text text-transparent drop-shadow-sm">
-                🍱 Sukiya Admin
+              <h1 className="text-xl md:text-2xl font-bold bg-gradient-to-r from-[#06C755] via-[#00C300] to-[#06C755] bg-clip-text text-transparent drop-shadow-sm">
+                Miraisei Demo Admin
               </h1>
             </div>
             <div className="hidden sm:ml-8 sm:flex sm:space-x-3 md:space-x-4 flex-1">
@@ -119,6 +125,15 @@ export default function AdminNavigation() {
                   </Link>
                 </>
               )}
+
+              <button
+                onClick={handleLanguageToggle}
+                className="p-2 text-gray-600 hover:text-[#06C755] transition-colors duration-200 rounded-lg hover:bg-white/50 active:scale-95 touch-manipulation min-h-[44px] min-w-[44px] flex items-center justify-center font-bold"
+                aria-label="Toggle Language"
+              >
+                {locale === 'en' ? 'JP' : 'EN'}
+              </button>
+
               <button
                 onClick={handleLogout}
                 className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 touch-manipulation min-h-[44px] flex items-center gap-2"
@@ -167,6 +182,15 @@ export default function AdminNavigation() {
               </div>
             </Link>
           )}
+
+          <button
+            onClick={handleLanguageToggle}
+            className="w-full px-5 py-4 text-gray-700 hover:bg-white/50 rounded-xl font-bold transition-all duration-200 active:scale-95 touch-manipulation min-h-[56px] flex items-center gap-3 border-t border-white/50"
+          >
+            <span className="text-xl">🌐</span>
+            <span>{locale === 'en' ? '日本語に切り替え' : 'Switch to English'}</span>
+          </button>
+
           <button
             onClick={handleLogout}
             className="w-full px-5 py-4 bg-red-500 hover:bg-red-600 text-white rounded-xl font-bold transition-all duration-200 active:scale-95 touch-manipulation min-h-[56px] flex items-center justify-center gap-2 mt-2"
@@ -195,9 +219,9 @@ function NavLink({
   return (
     <Link
       href={href}
-      className={`inline-flex items-center px-5 md:px-6 py-3 md:py-3.5 rounded-xl text-base md:text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[48px] md:min-h-[52px] ${isActive
-          ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
-          : "text-gray-700 active:text-gray-900 active:bg-white/70 backdrop-blur-sm border border-white/50"
+      className={`inline-flex items-center px-4 md:px-5 py-2 md:py-2.5 rounded-xl text-sm md:text-base font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[40px] md:min-h-[44px] ${isActive
+        ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
+        : "text-gray-700 active:text-gray-900 active:bg-white/70 backdrop-blur-sm border border-white/50"
         }`}
     >
       {children}
@@ -220,9 +244,9 @@ function MobileNavLink({
   return (
     <Link
       href={href}
-      className={`block px-5 py-4 rounded-xl text-lg font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[56px] flex items-center ${isActive
-          ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
-          : "text-gray-700 active:bg-white active:text-gray-900"
+      className={`block px-5 py-3 rounded-xl text-base font-bold transition-all duration-200 touch-manipulation active:scale-95 min-h-[48px] flex items-center ${isActive
+        ? "bg-gradient-to-r from-[#06C755] to-[#00C300] text-white shadow-lg active:shadow-xl"
+        : "text-gray-700 active:bg-white active:text-gray-900"
         }`}
     >
       {children}
